@@ -1,0 +1,64 @@
+!!----------------------------------------------
+!!
+!!   Namelist for computing stream functions
+!!
+!!
+!!   Joakim Kjellsson
+!!
+!!----------------------------------------------
+
+&TIME
+  yearstart=1980,
+  monstart=1,
+  daystart=1,
+  hourstart=0,
+  hourstep=6,
+  intsend=124,
+  /
+
+&DIR
+  inDataDir='/nobackup/global/x_joakj/data/era-interim/',
+  outDataDir='/nobackup/global/x_joakj/data/',
+  tmpDataDir='/nobackup/global/x_joakj/data/',
+  topoDir='/nobackup/global/x_joakj/data/gfdl-cm3/topo/',
+  /
+
+&FILE
+  project='ERA',
+  prefix='era_tendency_psirr',
+  /
+
+&GRID
+  IMT=288,
+  JMT=144,
+  KM=60,
+  MR=251,  !Number of points for psi(r,r) stream functions
+  MR2=45,  !Number of points for isobaric zonal averages
+  NRST=3,  !1=q, 2=DSE, 3=MSE, 4=alpha, 5=p, 6=T
+  LBAS=1,  !1=NH, 2=SH, 3=Total
+  /
+
+&COORD
+  rmin = 0.,
+  rmax = 1100.,
+  tmin = 173.,
+  tmax = 323.,
+  smin = -2.,
+  smax = 28.,
+  dmin = 240.,
+  dmax = 360.,
+  mmin = 240.,
+  mmax = 450.,
+  amin = 0.5,
+  amax = 6.,
+  /
+
+&MISC
+  lverbose   = .false.,
+  logp       = .false.,
+  tweak_tmean = 0,
+  tweak_zmean = 0,
+  tweak_tend = -1,
+  tweak_freq = 0,
+  /  
+!!----------------------------------------------
