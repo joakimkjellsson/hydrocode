@@ -4103,10 +4103,10 @@ CONTAINS
          qFile2 = trim(tmpDataDir)//trim(prefix)//'hus.nc'
          zFile2 = trim(tmpDataDir)//trim(prefix)//'z0.nc'
          
-         !call cdo_interp(uFile,uFile2,topoFile,tmpFile,rstring,'ua,ps',1,1,1)
-         !call cdo_interp(vFile,vFile2,topoFile,tmpFile,rstring,'va',1,1,1)
-         !call cdo_interp(tFile,tFile2,topoFile,tmpFile,rstring,'ta',1,0,0)
-         !call cdo_interp(qFile,qFile2,topoFile,tmpFile,rstring,'hus',1,0,0)
+         call cdo_interp(uFile,uFile2,topoFile,tmpFile,rstring,'ua,ps',1,1,1)
+         call cdo_interp(vFile,vFile2,topoFile,tmpFile,rstring,'va',1,1,1)
+         call cdo_interp(tFile,tFile2,topoFile,tmpFile,rstring,'ta',1,0,0)
+         call cdo_interp(qFile,qFile2,topoFile,tmpFile,rstring,'hus',1,0,0)
          
          uFile = uFile2
          vFile = vFile2
@@ -4266,7 +4266,7 @@ CONTAINS
       !!
       if (tweak_zmean >= 1) then
          
-         !call cdo_interp(zFile,zFile2,topoFile,tmpFile,rstring,'orog',0,0,0)
+         call cdo_interp(zFile,zFile2,topoFile,tmpFile,rstring,'orog',0,0,0)
          zFile = zFile2
       
       end if   
@@ -4283,7 +4283,7 @@ CONTAINS
       
       if (tweak_zmean >= 1) then
          
-         !call system('rm -f '//trim(zFile))
+         call system('rm -f '//trim(zFile))
          
       end if
       
@@ -4326,10 +4326,10 @@ CONTAINS
       
       if (tweak_zmean >= 1) then
          
-         !call system('rm -f '//trim(uFile))
-         !call system('rm -f '//trim(vFile))
-         !call system('rm -f '//trim(tFile))
-         !call system('rm -f '//trim(qFile))
+         call system('rm -f '//trim(uFile))
+         call system('rm -f '//trim(vFile))
+         call system('rm -f '//trim(tFile))
+         call system('rm -f '//trim(qFile))
       
       end if
       
