@@ -1117,19 +1117,26 @@ PROGRAM PSIXX_IFS
    
    SELECT CASE (TRIM(project))
       
+      CASE ('CanESM2-HISTR')
+         CALL get_data_canesm('ESM2-HISTR')
+      CASE ('CanESM2-RCP85')
+         CALL get_data_canesm('ESM2-RCP85')
       
-      CASE ('IFS-SHC')
-         CALL get_data_ifs('IFS-HISTR')
-      CASE ('IFS-SS41')
-         CALL get_data_ifs('IFS-RCP45')
-      CASE ('IFS-SS81')
-         CALL get_data_ifs('IFS-RCP85')
+      CASE ('CCSM-HISTR')
+         CALL get_data_ccsm('HISTR')
+      CASE ('CCSM-RCP85')
+         CALL get_data_ccsm('RCP85')
+      
+      CASE ('CNRM-HISTR')
+         CALL get_data_cnrm('HISTR')
+      CASE ('CNRM-RCP85')
+         CALL get_data_cnrm('RCP85')
+      
+      CASE ('CSIRO-HISTR')
+         CALL get_data_csiro('HISTR')
       
       CASE ('ERA')
          CALL get_data_era()
-      
-      CASE ('MERRA')
-         CALL get_data_merra()
       
       CASE ('GFDL-AMIP')
          CALL get_data_gfdl('AMIP-CONT')
@@ -1138,39 +1145,31 @@ PROGRAM PSIXX_IFS
       CASE ('GFDL-RCP85')
          CALL get_data_gfdl('CM3-RCP85')
       
-      CASE ('CNRM-HISTR')
-         CALL get_data_cnrm('CM5-HISTR')
-      CASE ('CNRM-RCP85')
-         CALL get_data_cnrm('CM5-RCP85')
+      CASE ('GISS-HISTR')
+         CALL get_data_giss('HISTR')
       
       CASE ('HAD-HIST')
          CALL get_data_hadgem('HAD-HISTR')
+      
+      CASE ('IFS-SHC')
+         CALL get_data_ifs('IFS-HISTR')
+      CASE ('IFS-SS41')
+         CALL get_data_ifs('IFS-RCP45')
+      CASE ('IFS-SS81')
+         CALL get_data_ifs('IFS-RCP85')
       
       CASE ('IPSL-HISTR')
          CALL get_data_ipsl('IPSL-HISTR')
       CASE ('IPSL-RCP85')
          CALL get_data_ipsl('IPSL-RCP85')
       
-      CASE ('CCSM-HISTR')
-         CALL get_data_ccsm('HISTR')
-      CASE ('CCSM-RCP85')
-         CALL get_data_ccsm('RCP85')
+      CASE ('MERRA')
+         CALL get_data_merra()
       
-      CASE ('CanESM2-HISTR')
-         CALL get_data_canesm('ESM2-HISTR')
-      CASE ('CanESM2-RCP85')
-         CALL get_data_canesm('ESM2-RCP85')
-         
       CASE ('NorESM1-HISTR')
          CALL get_data_noresm('ESM1-HISTR')
       CASE ('NorESM1-RCP85')
          CALL get_data_noresm('ESM1-RCP85')   
-      
-      CASE ('CSIRO-HISTR')
-         CALL get_data_csiro('HISTR')
-      
-      CASE ('GISS-HISTR')
-         CALL get_data_giss('HISTR')
       
       CASE DEFAULT
          PRINT*,TRIM(project)

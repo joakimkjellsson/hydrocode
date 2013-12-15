@@ -881,6 +881,10 @@ CONTAINS
    !!
    !!---------------------------------------------------------------------------
    
+   PRINT*,' This project is currently problematic. '
+   print*,' Stopping...'
+   STOP
+   
 !$OMP MASTER
    
    dtstep = FLOAT(hourstep) * 3600. 
@@ -1759,6 +1763,10 @@ CONTAINS
    
    REAL*4, ALLOCATABLE, DIMENSION(:,:) :: lat_bnds, lon_bnds
    CHARACTER, INTENT(IN) :: run*9
+   
+   print*,' This project is currently problematic '
+   print*,' stopping...'
+   stop
    
 !$OMP MASTER
    
@@ -4410,6 +4418,10 @@ CONTAINS
    
    CHARACTER, INTENT(IN) :: run*5
    
+   print*,' this project is currently problematic '
+   print*,' stopping '
+   stop
+   
 !$OMP MASTER
    
    dtstep = FLOAT(hourstep) * 3600.  
@@ -4885,7 +4897,7 @@ CONTAINS
    !!
    !!---------------------------------------------------------------------------
    
-   CHARACTER, INTENT(IN) :: run*9
+   CHARACTER, INTENT(IN) :: run*5
    
 !$OMP MASTER
    
@@ -4905,8 +4917,7 @@ CONTAINS
       !!
       !! Private arrays that will be kept throughout the integrations
       !!
-      ALLOCATE( dzt(IMT,JMT,KM,2), dxdy(IMT,JMT), dx(IMT,0:JMT), dy(IMT,JMT), &
-      &         vlat2(0:JMT), aa(0:KM), bb(0:KM), zxy(IMT,0:JMT) ) 
+      ALLOCATE( aa(0:KM), bb(0:KM), zxy(IMT,0:JMT), steps(12,31,4) ) 
       
       dzt(:,:,:,:) = 0.
       dxdy(:,:) = 0.
@@ -4940,13 +4951,15 @@ CONTAINS
    !!
    !! Temporary arrays
    !!
-   ALLOCATE( geo_i(IMT,JMT,0:KM) )
    
-   ALLOCATE( txyz(IMT,JMT,KM), &
-   &         qxyz(IMT,JMT,KM), &
-   &         uxyz(IMT,JMT,KM), &
-   &         vxyz(IMT,JMT,KM), &
-   &         pxy (IMT,JMT) )
+   allocate( txyz(IMT,0:JMT,KM), &
+   &         qxyz(IMT,0:JMT,KM), &
+   &         uxyz(IMT,0:JMT,KM), &
+   &         vxyz(IMT,0:JMT,KM), &
+   &         pxy (IMT,0:JMT),    &
+   &         pt  (imt,jmt),      &
+   &         pu  (imt,jmt),      &
+   &         pv  (imt,0:jmt) )
    
    geo_i(:,:,:) = 0.
    txyz(:,:,:) = 0.
@@ -4973,7 +4986,7 @@ CONTAINS
       !!
       SELECT CASE (TRIM(run))
          
-         CASE ('CM5-HISTR')
+         CASE ('HISTR')
             
             string='000000000600-00000000000000.nc'
             WRITE (string(1:4),   '(i4.4)') iyear
@@ -5007,7 +5020,7 @@ CONTAINS
             zFile=TRIM(topoDir)//'orog_fx_CNRM-CM5_historical_r0i0p0.nc'
             topoFile=TRIM(topoDir)//'areacella_fx_CNRM-CM5_historical_r0i0p0.nc'
             
-         CASE ('CM5-RCP85')
+         CASE ('RCP85')
             string='0000010100-0000123123.nc'
             WRITE (string(1:4),   '(i4)') iyear
             WRITE (string(12:15), '(i4)') iyear
@@ -5029,66 +5042,19 @@ CONTAINS
       !! Re-grid if necessary
       !!
       IF (tweak_zmean >= 1) THEN
-         SELECT CASE (tweak_zmean)
-            CASE (1)
-               string = 'r144x72'
-            CASE (2)
-               string = 'r72x36'
-         END SELECT
          
          tmpFile = TRIM(tmpDataDir)//TRIM(prefix)//'tmp.nc'
-         tmpFile2 = TRIM(tmpDataDir)//TRIM(prefix)//'tmp2.nc'
-         pFile2 = TRIM(tmpDataDir)//TRIM(prefix)//'ps.nc'
          uFile2 = TRIM(tmpDataDir)//TRIM(prefix)//'ua.nc'
          vFile2 = TRIM(tmpDataDir)//TRIM(prefix)//'va.nc'
          tFile2 = TRIM(tmpDataDir)//TRIM(prefix)//'ta.nc'
          qFile2 = TRIM(tmpDataDir)//TRIM(prefix)//'hus.nc'
+         zFile2 = trim(tmpDataDir)//trim(prefix)//'z0.nc'
          
-         PRINT*,' Isolate ps '
-         CALL SYSTEM('ncks -O -v ps,lon_bnds,lat_bnds '//TRIM(pFile)//' '//TRIM(tmpFile))
-         PRINT*,' Include grid cell area '
-         CALL SYSTEM('ncks -A -v areacella '//TRIM(topoFile)//' '//TRIM(tmpFile))
-         PRINT*,' Interpolate to '//TRIM(string)//' grid'
-         CALL SYSTEM('cdo -O remapbil,'//TRIM(string)//' '//TRIM(tmpFile)//' '//TRIM(pFile2)) 
-         CALL SYSTEM('rm '//TRIM(tmpFile))
+         call cdo_interp(uFile,uFile2,topoFile,tmpFile,rstring,'ua,ps',1,1,1)
+         call cdo_interp(vFile,vFile2,topoFile,tmpFile,rstring,'va',1,1,1)
+         call cdo_interp(tFile,tFile2,topoFile,tmpFile,rstring,'ta',1,1,1)
+         call cdo_interp(qFile,qFile2,topoFile,tmpFile,rstring,'hus',1,1,1)
          
-         PRINT*,' Isolate ua '
-         CALL SYSTEM('ncks -O -v ua,lon_bnds,lat_bnds,lev_bnds '&
-         &//TRIM(uFile)//' '//TRIM(tmpFile))
-         PRINT*,' Include grid cell area '
-         CALL SYSTEM('ncks -A -v areacella '//TRIM(topoFile)//' '//TRIM(tmpFile))
-         PRINT*,' Interpolate to '//TRIM(string)//' grid'
-         CALL SYSTEM('cdo -O remapbil,'//TRIM(string)//' '//TRIM(tmpFile)//' '//TRIM(uFile2)) 
-         CALL SYSTEM('rm '//TRIM(tmpFile))
-         
-         PRINT*,' Isolate va '
-         CALL SYSTEM('ncks -O -v va,lon_bnds,lat_bnds,lev_bnds '&
-         &//TRIM(vFile)//' '//TRIM(tmpFile))
-         PRINT*,' Include grid cell area '
-         CALL SYSTEM('ncks -A -v areacella '//TRIM(topoFile)//' '//TRIM(tmpFile))
-         PRINT*,' Interpolate to '//TRIM(string)//' grid'
-         CALL SYSTEM('cdo -O remapbil,'//TRIM(string)//' '//TRIM(tmpFile)//' '//TRIM(vFile2)) 
-         CALL SYSTEM('rm '//TRIM(tmpFile))
-         
-         PRINT*,' Isolate ta '
-         CALL SYSTEM('ncks -O -v ta,lon_bnds,lat_bnds,lev_bnds '&
-         &//TRIM(tFile)//' '//TRIM(tmpFile))
-         PRINT*,' Include grid cell area '
-         CALL SYSTEM('ncks -A -v areacella '//TRIM(topoFile)//' '//TRIM(tmpFile))
-         PRINT*,' Interpolate to '//TRIM(string)//' grid'
-         CALL SYSTEM('cdo -O remapbil,'//TRIM(string)//' '//TRIM(tmpFile)//' '//TRIM(tFile2)) 
-         CALL SYSTEM('rm '//TRIM(tmpFile))
-         
-         PRINT*,' Isolate hus '
-         CALL SYSTEM('ncks -O -v hus,lon_bnds,lat_bnds,lev_bnds '&
-         &//TRIM(qFile)//' '//TRIM(tmpFile))
-         PRINT*,' Include grid cell area '
-         CALL SYSTEM('ncks -A -v areacella '//TRIM(topoFile)//' '//TRIM(tmpFile))
-         PRINT*,' Interpolate to '//TRIM(string)//' grid'
-         CALL SYSTEM('cdo -O remapbil,'//TRIM(string)//' '//TRIM(tmpFile)//' '//TRIM(qFile2)) 
-         CALL SYSTEM('rm '//TRIM(tmpFile))
-         
-         pFile = pFile2
          uFile = uFile2
          vFile = vFile2
          tFile = tFile2
@@ -5110,12 +5076,7 @@ CONTAINS
       CALL err(ierr)
       
       !! P file
-      IF (lverbose) THEN
-         PRINT*,pFile
-      END IF
-      ierr = NF90_OPEN( pFile, NF90_SHARE, id_ncp)
-      CALL err(ierr)
-      ierr = NF90_INQ_VARID (id_ncp, 'ps', id_p) 
+      ierr = NF90_INQ_VARID (id_ncu, 'ps', id_p) 
       CALL err(ierr)
       
       !! V file
@@ -5169,7 +5130,7 @@ CONTAINS
          PRINT*,IMT,IMT2
          STOP
       END IF
-      IF (JMT2 /= JMT) THEN
+      IF (JMT2 /= JMT+1) THEN
          PRINT*,' Error: JMT in the data is not as you have set it! '
          PRINT*,JMT,JMT2
          STOP
@@ -5203,14 +5164,10 @@ CONTAINS
       CALL err(ierr)
       ierr = NF90_INQ_VARID (id_ncu, 'p0', id_p0)
       CALL err(ierr)
-      ierr = NF90_INQ_VARID (id_ncu, 'lon_bnds', id_lon2)
-      CALL err(ierr)
-      ierr = NF90_INQ_VARID (id_ncu, 'lat_bnds', id_lat2)
-      CALL err(ierr)
       
       ierr = NF90_GET_VAR (id_ncu, id_lon, vlon, start=[1], count=[IMT])
       CALL err(ierr)
-      ierr = NF90_GET_VAR (id_ncu, id_lat, vlat, start=[1], count=[JMT])
+      ierr = NF90_GET_VAR (id_ncu, id_lat, vlat2(0:jmt), start=[1], count=[JMT+1])
       CALL err(ierr)
       ierr = NF90_GET_VAR (id_ncu, id_lev, vlev, start=[1], count=[KM])
       CALL err(ierr)
@@ -5226,35 +5183,10 @@ CONTAINS
       ierr = NF90_GET_VAR (id_ncu, id_p0, p0)
       CALL err(ierr)
       
-      ierr = NF90_GET_VAR (id_ncu, id_lat2, vlat2(0:JMT-1), start=[1,1], count=[1,JMT])
-      CALL err(ierr)
-      ierr = NF90_GET_VAR (id_ncu, id_lat2, vlat2(1:JMT), start=[2,1], count=[1,JMT])
-      CALL err(ierr)
-      
       !!
       !! Define dy and calculate dx
       !!
-      DO jj=1,JMT
-         dy(:,jj) = (vlat2(jj) - vlat2(jj-1)) * deg
-      END DO
-      DO jj=0,JMT
-         DO ji=1,IMT
-            im = ji-1
-            IF (im == 0) THEN
-               im = IMT
-            END IF
-            dlon = vlon(ji) - vlon(im)
-            IF (dlon < 0.) THEN
-               dlon = dlon + 360.
-            END IF
-            dx(:,jj) = ABS( dlon * deg * COS (vlat2(jj) * radian) )
-         END DO
-      END DO
-      DO jj=1,JMT
-         jm = jj-1
-         dxdy(:,jj) =  0.5 * (dx(:,jj) + dx(:,jm)) * dy(:,jj)
-      END DO
-      
+      call calc_dxdy()
       
       IF (lverbose) THEN
          PRINT*,'dx(1,:)',dx(1,:)
@@ -5262,31 +5194,23 @@ CONTAINS
          PRINT*,'dxdy(1,:)',dxdy(1,:)
       END IF
       
-      !!
-      !! Re-grid if necessary
-      !!
-      IF (tweak_zmean >= 1) THEN
-         PRINT*,' Isolate orog '
-         tFile2 = TRIM(tmpDataDir)//'orog.nc'
-         CALL SYSTEM('ncks -O -v orog,lon_bnds,lat_bnds '&
-         &//TRIM(tFile)//' '//TRIM(tmpFile))
-         PRINT*,' Include grid cell area '
-         CALL SYSTEM('ncks -A -v areacella '//TRIM(topoFile)//' '//TRIM(tmpFile))
-         PRINT*,' Interpolate to '//TRIM(string)//' grid'
-         CALL SYSTEM('cdo -O remapbil,'//TRIM(string)//' '//TRIM(tmpFile)//' '//TRIM(tFile2)) 
-         CALL SYSTEM('rm '//TRIM(tmpFile))
-         zFile = tFile2
-      END IF
       
       !!
       !! Read orography (Z file)
       !!
+      IF (tweak_zmean >= 1) THEN
+         
+         call cdo_interp(zFile,zFile2,topoFile,tmpFile,rstring,'orog',1,0,0)
+         zFile = zFile2
+         
+      END IF
+      
       ierr = NF90_OPEN( zFile, NF90_SHARE, id_ncz)
       CALL err(ierr)
       ierr = NF90_INQ_VARID (id_ncz, 'orog', id_z) 
       CALL err(ierr)
-      ierr = NF90_GET_VAR (id_ncz, id_z, zxy(:,:),    start=[  1,   1], &
-      &                                               count=[IMT, JMT])
+      ierr = NF90_GET_VAR (id_ncz, id_z, zxy(:,0:jmt),    start=[  1,   1], &
+      &                                               count=[IMT, JMT+1])
       CALL err(ierr)
       ierr = NF90_CLOSE(id_ncz)
       CALL err(ierr)
@@ -5297,25 +5221,25 @@ CONTAINS
    END IF
    
    
-   ierr = NF90_GET_VAR (id_ncu, id_u, uxyz(:,1:JMT,:), &
-   &                                        start=[  1,   1,  1, istep],     &
-   &                                        count=[IMT, JMT, KM,     1])
+   ierr = NF90_GET_VAR (id_ncu, id_u, uxyz(:,0:JMT,:), &
+   &                                        start=[  1,     1,  1, istep],     &
+   &                                        count=[IMT, JMT+1, KM,     1])
    CALL err(ierr)
-   ierr = NF90_GET_VAR (id_ncv, id_v, vxyz(:,1:JMT,:), &
-   &                                        start=[  1,   1,  1, istep], &
-   &                                        count=[IMT, JMT, KM,     1])
+   ierr = NF90_GET_VAR (id_ncv, id_v, vxyz(:,0:JMT,:), &
+   &                                        start=[  1,     1,  1, istep], &
+   &                                        count=[IMT, JMT+1, KM,     1])
    CALL err(ierr)
-   ierr = NF90_GET_VAR (id_nct, id_t, txyz(:,1:JMT,:), &
-   &                                        start=[  1,   1,  1, istep], &
-   &                                        count=[IMT, JMT, KM,     1])
+   ierr = NF90_GET_VAR (id_nct, id_t, txyz(:,0:JMT,:), &
+   &                                        start=[  1,     1,  1, istep], &
+   &                                        count=[IMT, JMT+1, KM,     1])
    CALL err(ierr)
-   ierr = NF90_GET_VAR (id_ncp, id_p, pxy(:,1:JMT),  &
-   &                                        start=[  1,   1, istep], &
-   &                                        count=[IMT, JMT,     1])
+   ierr = NF90_GET_VAR (id_ncp, id_p, pxy(:,0:JMT),  &
+   &                                        start=[  1,     1, istep], &
+   &                                        count=[IMT, JMT+1,     1])
    CALL err(ierr)
-   ierr = NF90_GET_VAR (id_ncq, id_q, qxyz(:,1:JMT,:), &
-   &                                        start=[  1,   1,  1, istep], &
-   &                                        count=[IMT, JMT, KM,     1])
+   ierr = NF90_GET_VAR (id_ncq, id_q, qxyz(:,0:JMT,:), &
+   &                                        start=[  1,     1,  1, istep], &
+   &                                        count=[IMT, JMT+1, KM,     1])
    CALL err(ierr)
    
          
@@ -5333,7 +5257,6 @@ CONTAINS
       CALL err(ierr)
       
       IF (tweak_zmean >= 1) THEN
-         CALL SYSTEM('rm '//TRIM(pFile))
          CALL SYSTEM('rm '//TRIM(uFile))
          CALL SYSTEM('rm '//TRIM(vFile))
          CALL SYSTEM('rm '//TRIM(qFile))
@@ -5342,129 +5265,62 @@ CONTAINS
       
    END IF
    
+   call a2cgrid_u(pxy(:,:),pu(:,:))
+   call a2cgrid_v(pxy(:,:),pv(:,:))
+   call a2cgrid_t(pxy(:,:),pt(:,:))
+   call a2cgrid_t(zxy(:,:),geo_i(:,:,km))
+   
+   rho_i(:,:,0) = aa(km) * p0 + bb(km) * pt(:,:)
    
    DO jk=1,KM
       
-      il=KM-jk+1
+      il = km - jk + 1
+      ku = km - jk + 1
+      kb = km - jk
       
       !!
       !! A-grid -> C-grid 
       !! u,v -> uflux,vflux
       !!
-      DO jj=1,JMT
-         
-         jp = jj+1
-         
-         DO ji=1,IMT
-            
-            ip = ji+1
-            IF (ip == IMT+1) THEN
-               ip = 1
-            END IF
-            
-            tem(ji,jj,jk)    =  txyz(ji,jj,il)
-            sal(ji,jj,jk)    =  qxyz(ji,jj,il)
-            
-            pp               =  pxy(ji,jj)
-            da               =  0.5 * (aa(il-1) + aa(il))
-            db               =  0.5 * (bb(il-1) + bb(il))
-            rho  (ji,jj,jk)  =  da * p0 + db * pp
-            
-            da  = aa(il-1) - aa(il) 
-            db  = bb(il-1) - bb(il) 
-            dzt  (ji,jj,jk,2)=  da * p0 + db * pp
-            vol  (ji,jj,jk)  =  dzt(ji,jj,jk,2) * dxdy(ji,jj) / dg 
-            
-            pp  = 0.5 * (pxy(ip,jj) + pxy(ji,jj))
-            dp  = da * p0 + db * pp
-            uflux(ji,jj,jk) =  0.5 *( uxyz(ip,jj,il) + uxyz(ji,jj,il) ) / &
-            &                  dg * dy(ji,jj) * dp
-            
-            IF ( jj /= JMT) THEN
-               pp  = 0.5 * (pxy(ji,jp) + pxy(ji,jj))
-               dp  = da * p0 + db * pp
-               vflux(ji,jj,jk) =  0.5 *( vxyz(ji,jp,il) + vxyz(ji,jj,il) ) / &
-               &                  dg * dx(ji,jj) * dp
-            END IF
-            
-         END DO
-         
-      END DO
       
-      !!
-      !! No fluxes at poles
-      !!
-      vflux(:,0,:) = 0.
-      vflux(:,JMT,:) = 0.
+      rho_i(:,:,jk) = aa(kb) * p0 + bb(kb) * pt(:,:)
+      
+      da = aa(kb) - aa(ku)
+      db = aa(kb) - bb(ku)
+      dzt(:,:,jk,2) = da * p0 + db * pt 
+      vol(:,:,jk) = dzt(:,:,jk,2) * dxdy(:,:) / dg
+      
+      call a2cgrid_t(txyz(:,:,il),tem(:,:,jk))
+      call a2cgrid_t(qxyz(:,:,il),sal(:,:,jk))
+      
+      call a2cgrid_u(uxyz(:,:,il),uxyz(:,:,il))
+      uflux(:,:,jk) = uxyz(:,:,il) * (da * p0 + db * pu) * dy(:,:) / dg
+      call a2cgrid_v(vxyz(:,:,il),vxyz(:,:,il))
+      vflux(:,:,jk) = vxyz(:,:,il) * (da * p0 + db * pv) * dx(:,:) / dg
+      
       
    END DO
    
-   DEALLOCATE( txyz, qxyz, uxyz, vxyz )
-   
-   geo_i(:,:,KM) = zxy(:,:) * dg
+   DEALLOCATE( txyz, qxyz, uxyz, vxyz, pxy, pt, pu, pv )
    
    !!
    !! Calculate geopotential
    !!
-   DO jj = 1,JMT
-      DO jk = KM,1,-1   !Integrate from surface to top
-         il = KM-jk+1
-         DO ji = 1,IMT
-                     
-            ! Virtual temperature at layer mid-point
-            tv = ( 1.0 + 0.61 * sal(ji,jj,jk) ) * tem(ji,jj,jk)
-            ! Pressure at bottom interface 
-            pc = aa(il-1) * p0 + bb(il-1) * pxy(ji,jj)
-            ! Pressure at top interface 
-            pm = aa(il) * p0 + bb(il) * pxy(ji,jj)
-            ! Geopotential at top interface k-1
-            geo_i(ji,jj,jk-1) = geo_i(ji,jj,jk) + Rd * tv * LOG (pc/pm)
-            
-            
-         END DO
-      END DO
-   END DO
+   call int_geo()
    
+   geo(:,:,1:km) = 0.5 * (geo_i(:,:,1:km) + geo_i(:,:,0:km-1))
+   rho(:,:,1:km) = 0.5 * (rho_i(:,:,1:km) + rho_i(:,:,0:km-1))
    
-   !!
-   !! Calculate DSE, MSE
-   !!
-   DO jk=1,KM
-      geo(:,:,jk) = 0.5 * (geo_i(:,:,jk) + geo_i(:,:,jk-1))
-   END DO
+   PRINT*,geo_i(1,36,:)
+   PRINT*,rho_i(1,36,:)
    
-   DEALLOCATE ( geo_i, pxy )
-   
-   PRINT*,geo(1,60,:)
-   PRINT*,rho(1,60,:)
+   stop
    
    !!
    !! Calculate vertical mass flux
    !!
-   wflux(:,:,0) = 0.
+   call calc_wflux()
    
-   DO jj=1,JMT
-      
-      jm = jj-1
-      
-      DO jk=1,KM
-         
-         DO ji=1,IMT
-            
-            im = ji-1
-            IF (im == 0) THEN
-               im = IMT
-            END IF
-            
-            wflux(ji,jj,jk) = wflux(ji,jj,jk-1) - &
-            &                         ( uflux(ji,jj,jk) - uflux(im,jj,jk) + &
-            &                           vflux(ji,jj,jk) - vflux(ji,jm,jk) + &
-            &                          (dzt(ji,jj,jk,2) - dzt(ji,jj,jk,1))* &
-            &                           dxdy(ji,jj) / dtstep / dg )
-            
-         END DO
-      END DO
-   END DO
 !$OMP END MASTER
 
 
