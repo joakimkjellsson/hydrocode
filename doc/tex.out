@@ -1,0 +1,94 @@
+This is pdfTeXk, Version 3.1415926-1.40.9 (Web2C 7.5.7)
+ %&-line parsing enabled.
+entering extended mode
+(./hydrocode.tex
+LaTeX2e <2005/12/01>
+Babel <v3.8l> and hyphenation patterns for english, usenglishmax, dumylang, noh
+yphenation, german-x-2008-06-18, ngerman-x-2008-06-18, ancientgreek, ibycus, ar
+abic, basque, bulgarian, catalan, pinyin, coptic, croatian, czech, danish, dutc
+h, esperanto, estonian, farsi, finnish, french, galician, german, ngerman, mono
+greek, greek, hungarian, icelandic, indonesian, interlingua, irish, italian, la
+tin, lithuanian, mongolian, mongolian2a, bokmal, nynorsk, polish, portuguese, r
+omanian, russian, sanskrit, serbian, slovak, slovenian, spanish, swedish, turki
+sh, ukenglish, ukrainian, uppersorbian, welsh, loaded.
+(/usr/local/texlive/2008/texmf-dist/tex/latex/base/article.cls
+Document Class: article 2005/09/16 v1.4f Standard LaTeX document class
+(/usr/local/texlive/2008/texmf-dist/tex/latex/base/size10.clo))
+(/usr/local/texlive/2008/texmf-dist/tex/latex/base/fixltx2e.sty)
+(/usr/local/texlive/2008/texmf-dist/tex/latex/cmap/cmap.sty)
+(/usr/local/texlive/2008/texmf-dist/tex/latex/base/ifthen.sty)
+(/usr/local/texlive/2008/texmf-dist/tex/latex/base/fontenc.sty
+(/usr/local/texlive/2008/texmf-dist/tex/latex/base/t1enc.def)<<t1.cmap>>)
+(/usr/local/texlive/2008/texmf-dist/tex/latex/base/inputenc.sty
+(/usr/local/texlive/2008/texmf-dist/tex/latex/base/utf8.def
+(/usr/local/texlive/2008/texmf-dist/tex/latex/base/t1enc.dfu)
+(/usr/local/texlive/2008/texmf-dist/tex/latex/base/ot1enc.dfu)
+(/usr/local/texlive/2008/texmf-dist/tex/latex/base/omsenc.dfu)))
+(/usr/local/texlive/2008/texmf-dist/tex/latex/amsmath/amsmath.sty
+For additional information on amsmath, use the `?' option.
+(/usr/local/texlive/2008/texmf-dist/tex/latex/amsmath/amstext.sty
+(/usr/local/texlive/2008/texmf-dist/tex/latex/amsmath/amsgen.sty))
+(/usr/local/texlive/2008/texmf-dist/tex/latex/amsmath/amsbsy.sty)
+(/usr/local/texlive/2008/texmf-dist/tex/latex/amsmath/amsopn.sty))
+(/usr/local/texlive/2008/texmf-dist/tex/latex/tools/tabularx.sty
+(/usr/local/texlive/2008/texmf-dist/tex/latex/tools/array.sty))
+(/usr/local/texlive/2008/texmf-dist/tex/latex/psnfss/mathptmx.sty)
+(/usr/local/texlive/2008/texmf-dist/tex/latex/psnfss/helvet.sty
+(/usr/local/texlive/2008/texmf-dist/tex/latex/graphics/keyval.sty))
+(/usr/local/texlive/2008/texmf-dist/tex/latex/psnfss/courier.sty)
+(/usr/local/texlive/2008/texmf-dist/tex/latex/hyperref/hyperref.sty
+(/usr/local/texlive/2008/texmf-dist/tex/generic/oberdiek/ifpdf.sty)
+(/usr/local/texlive/2008/texmf-dist/tex/generic/oberdiek/ifvtex.sty)
+(/usr/local/texlive/2008/texmf-dist/tex/generic/ifxetex/ifxetex.sty)
+(/usr/local/texlive/2008/texmf-dist/tex/latex/oberdiek/hycolor.sty
+(/usr/local/texlive/2008/texmf-dist/tex/latex/oberdiek/xcolor-patch.sty))
+(/usr/local/texlive/2008/texmf-dist/tex/latex/hyperref/pd1enc.def)
+(/usr/local/texlive/2008/texmf-dist/tex/generic/oberdiek/etexcmds.sty
+(/usr/local/texlive/2008/texmf-dist/tex/generic/oberdiek/infwarerr.sty))
+(/usr/local/texlive/2008/texmf/tex/latex/config/hyperref.cfg)
+(/usr/local/texlive/2008/texmf-dist/tex/latex/oberdiek/kvoptions.sty)
+Implicit mode ON; LaTeX internals redefined
+(/usr/local/texlive/2008/texmf-dist/tex/latex/ltxmisc/url.sty)
+(/usr/local/texlive/2008/texmf-dist/tex/generic/oberdiek/bitset.sty
+(/usr/local/texlive/2008/texmf-dist/tex/generic/oberdiek/intcalc.sty)
+(/usr/local/texlive/2008/texmf-dist/tex/generic/oberdiek/bigintcalc.sty
+(/usr/local/texlive/2008/texmf-dist/tex/generic/oberdiek/pdftexcmds.sty)))
+(/usr/local/texlive/2008/texmf-dist/tex/generic/oberdiek/kvsetkeys.sty)
+(/usr/local/texlive/2008/texmf-dist/tex/generic/oberdiek/atbegshi.sty))
+*hyperref using default driver hpdftex*
+(/usr/local/texlive/2008/texmf-dist/tex/latex/hyperref/hpdftex.def)
+(./hydrocode.aux) (/usr/local/texlive/2008/texmf-dist/tex/latex/psnfss/t1ptm.fd
+) (/usr/local/texlive/2008/texmf-dist/tex/latex/graphics/color.sty
+(/usr/local/texlive/2008/texmf/tex/latex/config/color.cfg)
+(/usr/local/texlive/2008/texmf-dist/tex/latex/pdftex-def/pdftex.def
+(/usr/local/texlive/2008/texmf-dist/tex/context/base/supp-pdf.tex
+[Loading MPS to PDF converter (version 2006.09.02).]
+))) (/usr/local/texlive/2008/texmf-dist/tex/latex/hyperref/nameref.sty
+(/usr/local/texlive/2008/texmf-dist/tex/latex/oberdiek/refcount.sty))
+(./hydrocode.out) (./hydrocode.out)
+(/usr/local/texlive/2008/texmf-dist/tex/latex/psnfss/ot1ztmcm.fd)<<ot1.cmap>>
+(/usr/local/texlive/2008/texmf-dist/tex/latex/psnfss/omlztmcm.fd)<<oml.cmap>>
+(/usr/local/texlive/2008/texmf-dist/tex/latex/psnfss/omsztmcm.fd)<<oms.cmap>>
+(/usr/local/texlive/2008/texmf-dist/tex/latex/psnfss/omxztmcm.fd)<<omx.cmap>>
+(/usr/local/texlive/2008/texmf-dist/tex/latex/psnfss/ot1ptm.fd)
+(/usr/local/texlive/2008/texmf-dist/tex/latex/psnfss/t1pcr.fd)
+(/usr/local/texlive/2008/texmf-dist/tex/latex/psnfss/omsptm.fd) [1{/usr/local/t
+exlive/2008/texmf-var/fonts/map/pdftex/updmap/pdftex.map}]
+Overfull \hbox (12.72768pt too wide) in paragraph at lines 138--139
+[]\T1/ptm/m/n/10 September 2013: Added sup-port from CanESM2, CCSM4, IPSL-CM5A,
+ NorESM1 
+[2] (./hydrocode.aux)
+
+LaTeX Warning: Label(s) may have changed. Rerun to get cross-references right.
+
+ )
+(see the transcript file for additional information){/usr/local/texlive/2008/te
+xmf-dist/fonts/enc/dvips/base/8r.enc}</usr/local/texlive/2008/texmf-dist/fonts/
+type1/bluesky/cm/cmr10.pfb></usr/local/texlive/2008/texmf-dist/fonts/type1/blue
+sky/cm/cmsy10.pfb></usr/local/texlive/2008/texmf-dist/fonts/type1/urw/courier/u
+crr8a.pfb></usr/local/texlive/2008/texmf-dist/fonts/type1/urw/symbol/usyr.pfb><
+/usr/local/texlive/2008/texmf-dist/fonts/type1/urw/times/utmb8a.pfb></usr/local
+/texlive/2008/texmf-dist/fonts/type1/urw/times/utmr8a.pfb></usr/local/texlive/2
+008/texmf-dist/fonts/type1/urw/times/utmri8a.pfb>
+Output written on hydrocode.pdf (2 pages, 61446 bytes).
+Transcript written on hydrocode.log.
