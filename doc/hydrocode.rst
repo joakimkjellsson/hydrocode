@@ -31,7 +31,8 @@ The following data has been used
 * CMIP5 models (atmosphere component only)
 	- CanESM2
 	- CCSM4
-	- CSIRO-Mk3-6-0
+	- CNRM CM5
+	- CSIRO Mk3-6-0
 	- GFDL CM3
 	- IPSL CM5A
 	- NorESM1
@@ -50,7 +51,7 @@ It was then adapted for the atmosphere (ERA-Interim) by Joakim Kjellsson.
 - July 2013: Restructured code into different modules, subroutines, etc. Unified different versions. 
 - August 2013: Added preprocessing flags to control what stream functions are outputed. 
 - September 2013: Added support from CanESM2, CCSM4, IPSL-CM5A, NorESM1
-- December 2013: Added support for CSIRO-Mk-3-6-0
+- December 2013: Added support for CSIRO-Mk-3-6-0, CNRM-CM5
 
 
 
