@@ -18,7 +18,7 @@ ifeq ($(SYS),vagn)
 endif
 ifeq ($(SYS),trio)
 	F90  = ifort
-	OPT  = -O2 -funroll-loops -AVX
+	OPT  = -O2 -funroll-loops -xAVX
 	OMP  = -openmp
 endif
 
