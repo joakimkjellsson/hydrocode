@@ -4096,6 +4096,31 @@ CONTAINS
             zFile = trim(topoDir)//'orog_fx_CSIRO-Mk3-6-0_historical_r0i0p0.nc'
             topoFile = trim(topoDir)//'areacella_fx_CSIRO-Mk3-6-0_historical_r0i0p0.nc'
          
+         CASE ('RCP85')
+            
+            string='000001010600-000001010000.nc'
+            if (imon == 1 .AND. iday == 1 .AND. ihour == 0) THEN
+               write (string(1:4),   '(i4)') iyear-1
+               write (string(14:17), '(i4)') iyear
+            else
+               write (string(1:4),   '(i4)') iyear
+               write (string(14:17), '(i4)') iyear+1
+            end if
+            dataprefix='6hrLev_CSIRO-Mk3-6-0_rcp85_r1i1p1_'//TRIM(string)
+            string='/0000/'
+            if (imon == 1 .AND. iday == 1 .AND. ihour == 0) THEN
+               write (string(2:5),       '(i4)') iyear-1
+            else
+               write (string(2:5),       '(i4)') iyear
+            end if
+            uFile = trim(inDataDir)//trim(string)//'ua_'//trim(dataprefix)
+            vFile = trim(inDataDir)//trim(string)//'va_'//trim(dataprefix)
+            tFile = trim(inDataDir)//trim(string)//'ta_'//trim(dataprefix)
+            qFile = trim(inDataDir)//trim(string)//'hus_'//trim(dataprefix)
+            zFile = trim(topoDir)//'orog_fx_CSIRO-Mk3-6-0_historical_r0i0p0.nc'
+            topoFile = trim(topoDir)//'areacella_fx_CSIRO-Mk3-6-0_historical_r0i0p0.nc'
+         
+         
       END SELECT
             
       !!

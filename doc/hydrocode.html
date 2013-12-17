@@ -659,7 +659,8 @@ Some models use sigma, <span class="formula"><i>p</i><sub><i>k</i></sub> = <
 <dd><ul class="first last simple">
 <li>CanESM2</li>
 <li>CCSM4</li>
-<li>CSIRO-Mk3-6-0</li>
+<li>CNRM CM5</li>
+<li>CSIRO Mk3-6-0</li>
 <li>GFDL CM3</li>
 <li>IPSL CM5A</li>
 <li>NorESM1</li>
@@ -668,6 +669,238 @@ Some models use sigma, <span class="formula"><i>p</i><sub><i>k</i></sub> = <
 </dl>
 </li>
 </ul>
+</div>
+<div class="section" id="set-up">
+<h1>Set up</h1>
+<p>Analysis can be controlled both via a few pre-processing flags at compile time and some values in a namelist at run time.</p>
+<div class="section" id="pre-processing">
+<h2>Pre-processing</h2>
+<p>The pre-processing flags control the kinds of data that will be saved to file.</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="12%" />
+<col width="88%" />
+</colgroup>
+<thead valign="bottom">
+<tr><th class="head">Flag</th>
+<th class="head">Calculates &amp; Outputs</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr><td>-Dpsixy</td>
+<td>Barotropic stream function in lon-lat coordinates</td>
+</tr>
+<tr><td>-Dpsixz</td>
+<td>Zonal overturning stream function in model coordinates</td>
+</tr>
+<tr><td>-Dpsixr</td>
+<td>Zonal overturining stream function in tracer coordinates</td>
+</tr>
+<tr><td>-Dpsiyz</td>
+<td>Meridional overturning stream function in model coordinates</td>
+</tr>
+<tr><td>-Dpsiyr</td>
+<td>Meridional overturning stream function in tracer coordinates</td>
+</tr>
+<tr><td>-Dpsirr</td>
+<td>Stream function in tracer-tracer coordinates</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="namelist">
+<h2>Namelist</h2>
+<p>The namelist controls a variety of settings.</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="20%" />
+<col width="80%" />
+</colgroup>
+<thead valign="bottom">
+<tr><th class="head">TIME</th>
+<th class="head">&nbsp;</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr><td>yearstart</td>
+<td>Starting year</td>
+</tr>
+<tr><td>monstart</td>
+<td>Starting month</td>
+</tr>
+<tr><td>daystart</td>
+<td>Starting day</td>
+</tr>
+<tr><td>hourstart</td>
+<td>Starting hour</td>
+</tr>
+<tr><td>hourstep</td>
+<td>Time (in hours) between model output</td>
+</tr>
+<tr><td>intsend</td>
+<td>Number of time steps to analyse</td>
+</tr>
+</tbody>
+</table>
+<table border="1" class="docutils">
+<colgroup>
+<col width="20%" />
+<col width="80%" />
+</colgroup>
+<thead valign="bottom">
+<tr><th class="head">DIR</th>
+<th class="head">&nbsp;</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr><td>inDataDir</td>
+<td>Folder for data to be analysed</td>
+</tr>
+<tr><td>outDataDir</td>
+<td>Folder for storing analysis output</td>
+</tr>
+<tr><td>tmpDataDir</td>
+<td>Folder for storing temporary files, e.g. scratch disk</td>
+</tr>
+<tr><td>topoDir</td>
+<td>Folder for topography data, e.g. grid/orography</td>
+</tr>
+</tbody>
+</table>
+<table border="1" class="docutils">
+<colgroup>
+<col width="20%" />
+<col width="80%" />
+</colgroup>
+<thead valign="bottom">
+<tr><th class="head">FILE</th>
+<th class="head">&nbsp;</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr><td>project</td>
+<td>Project to run. See list further down</td>
+</tr>
+<tr><td>prefix</td>
+<td>Name of analysis run. Unique for each run</td>
+</tr>
+</tbody>
+</table>
+<table border="1" class="docutils">
+<colgroup>
+<col width="20%" />
+<col width="80%" />
+</colgroup>
+<thead valign="bottom">
+<tr><th class="head">GRID</th>
+<th class="head">&nbsp;</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr><td>imt</td>
+<td>&nbsp;</td>
+</tr>
+<tr><td>jmt</td>
+<td>&nbsp;</td>
+</tr>
+<tr><td>km</td>
+<td>&nbsp;</td>
+</tr>
+<tr><td>mr</td>
+<td>&nbsp;</td>
+</tr>
+<tr><td>mr2</td>
+<td>&nbsp;</td>
+</tr>
+<tr><td>nrst</td>
+<td>&nbsp;</td>
+</tr>
+<tr><td>lbas</td>
+<td>&nbsp;</td>
+</tr>
+</tbody>
+</table>
+<table border="1" class="docutils">
+<colgroup>
+<col width="20%" />
+<col width="80%" />
+</colgroup>
+<thead valign="bottom">
+<tr><th class="head">COORD</th>
+<th class="head">&nbsp;</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr><td>rmin</td>
+<td>&nbsp;</td>
+</tr>
+<tr><td>rmax</td>
+<td>&nbsp;</td>
+</tr>
+<tr><td>tmin</td>
+<td>&nbsp;</td>
+</tr>
+<tr><td>tmax</td>
+<td>&nbsp;</td>
+</tr>
+<tr><td>smin</td>
+<td>&nbsp;</td>
+</tr>
+<tr><td>smax</td>
+<td>&nbsp;</td>
+</tr>
+<tr><td>dmin</td>
+<td>&nbsp;</td>
+</tr>
+<tr><td>dmax</td>
+<td>&nbsp;</td>
+</tr>
+<tr><td>mmin</td>
+<td>&nbsp;</td>
+</tr>
+<tr><td>mmax</td>
+<td>&nbsp;</td>
+</tr>
+<tr><td>amin</td>
+<td>&nbsp;</td>
+</tr>
+<tr><td>amax</td>
+<td>&nbsp;</td>
+</tr>
+</tbody>
+</table>
+<table border="1" class="docutils">
+<colgroup>
+<col width="20%" />
+<col width="80%" />
+</colgroup>
+<thead valign="bottom">
+<tr><th class="head">MISC</th>
+<th class="head">&nbsp;</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr><td>lverbose</td>
+<td>Verbose mode. Show extra information</td>
+</tr>
+<tr><td>logp</td>
+<td>Use log(pressure) instead of pressure</td>
+</tr>
+<tr><td>tweak_tmean</td>
+<td>Use a temporal mean e.g. daily/monthly/annual mean</td>
+</tr>
+<tr><td>tweak_zmean</td>
+<td>Use spatial average fields, e.g. re-grid or zonal mean.</td>
+</tr>
+<tr><td>tweak_tend</td>
+<td>Output local tendency results</td>
+</tr>
+<tr><td>tweak_freq</td>
+<td>If not 0 it controls the frequency of output</td>
+</tr>
+</tbody>
+</table>
+</div>
 </div>
 <div class="section" id="history">
 <h1>History</h1>
@@ -680,7 +913,7 @@ It was then adapted for the atmosphere (ERA-Interim) by Joakim Kjellsson.</p>
 <li>July 2013: Restructured code into different modules, subroutines, etc. Unified different versions.</li>
 <li>August 2013: Added preprocessing flags to control what stream functions are outputed.</li>
 <li>September 2013: Added support from CanESM2, CCSM4, IPSL-CM5A, NorESM1</li>
-<li>December 2013: Added support for CSIRO-Mk-3-6-0</li>
+<li>December 2013: Added support for CSIRO-Mk-3-6-0, CNRM-CM5</li>
 </ul>
 </div>
 </div>

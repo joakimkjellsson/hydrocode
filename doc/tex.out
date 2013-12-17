@@ -30,8 +30,10 @@ For additional information on amsmath, use the `?' option.
 (/usr/local/texlive/2008/texmf-dist/tex/latex/amsmath/amsgen.sty))
 (/usr/local/texlive/2008/texmf-dist/tex/latex/amsmath/amsbsy.sty)
 (/usr/local/texlive/2008/texmf-dist/tex/latex/amsmath/amsopn.sty))
-(/usr/local/texlive/2008/texmf-dist/tex/latex/tools/tabularx.sty
-(/usr/local/texlive/2008/texmf-dist/tex/latex/tools/array.sty))
+(/usr/local/texlive/2008/texmf-dist/tex/latex/tools/longtable.sty)
+(/usr/local/texlive/2008/texmf-dist/tex/latex/caption/ltcaption.sty)
+(/usr/local/texlive/2008/texmf-dist/tex/latex/tools/array.sty)
+(/usr/local/texlive/2008/texmf-dist/tex/latex/tools/tabularx.sty)
 (/usr/local/texlive/2008/texmf-dist/tex/latex/psnfss/mathptmx.sty)
 (/usr/local/texlive/2008/texmf-dist/tex/latex/psnfss/helvet.sty
 (/usr/local/texlive/2008/texmf-dist/tex/latex/graphics/keyval.sty))
@@ -73,22 +75,13 @@ Implicit mode ON; LaTeX internals redefined
 (/usr/local/texlive/2008/texmf-dist/tex/latex/psnfss/ot1ptm.fd)
 (/usr/local/texlive/2008/texmf-dist/tex/latex/psnfss/t1pcr.fd)
 (/usr/local/texlive/2008/texmf-dist/tex/latex/psnfss/omsptm.fd) [1{/usr/local/t
-exlive/2008/texmf-var/fonts/map/pdftex/updmap/pdftex.map}]
-Overfull \hbox (12.72768pt too wide) in paragraph at lines 138--139
-[]\T1/ptm/m/n/10 September 2013: Added sup-port from CanESM2, CCSM4, IPSL-CM5A,
- NorESM1 
-[2] (./hydrocode.aux)
-
-LaTeX Warning: Label(s) may have changed. Rerun to get cross-references right.
-
- )
-(see the transcript file for additional information){/usr/local/texlive/2008/te
-xmf-dist/fonts/enc/dvips/base/8r.enc}</usr/local/texlive/2008/texmf-dist/fonts/
-type1/bluesky/cm/cmr10.pfb></usr/local/texlive/2008/texmf-dist/fonts/type1/blue
-sky/cm/cmsy10.pfb></usr/local/texlive/2008/texmf-dist/fonts/type1/urw/courier/u
-crr8a.pfb></usr/local/texlive/2008/texmf-dist/fonts/type1/urw/symbol/usyr.pfb><
-/usr/local/texlive/2008/texmf-dist/fonts/type1/urw/times/utmb8a.pfb></usr/local
-/texlive/2008/texmf-dist/fonts/type1/urw/times/utmr8a.pfb></usr/local/texlive/2
-008/texmf-dist/fonts/type1/urw/times/utmri8a.pfb>
-Output written on hydrocode.pdf (2 pages, 61446 bytes).
+exlive/2008/texmf-var/fonts/map/pdftex/updmap/pdftex.map}])
+Runaway argument?
+{\hline \endfirsthead \hline \textbf {TIME } & \textbf {\hline \endhead \ETC.
+! File ended while scanning use of \textbf .
+<inserted text> 
+                \par 
+<*> hydrocode.tex
+                 
+!  ==> Fatal error occurred, no output PDF file produced!
 Transcript written on hydrocode.log.

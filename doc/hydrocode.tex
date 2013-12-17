@@ -7,6 +7,9 @@
 \usepackage[utf8]{inputenc}
 \usepackage{amsmath}
 \setcounter{secnumdepth}{0}
+\usepackage{longtable,ltcaption,array}
+\setlength{\extrarowheight}{2pt}
+\newlength{\DUtablewidth} % internal use in tables
 \usepackage{tabularx}
 
 %%% Custom LaTeX preamble
@@ -101,7 +104,9 @@ The following data has been used
 
 \item CCSM4
 
-\item CSIRO-Mk3-6-0
+\item CNRM CM5
+
+\item CSIRO Mk3-6-0
 
 \item GFDL CM3
 
@@ -114,6 +119,384 @@ The following data has been used
 \end{description}
 
 \end{itemize}
+
+
+\section{Set up%
+  \label{set-up}%
+}
+
+Analysis can be controlled both via a few pre-processing flags at compile time and some values in a namelist at run time.
+
+
+\subsection{Pre-processing%
+  \label{pre-processing}%
+}
+
+The pre-processing flags control the kinds of data that will be saved to file.
+
+\setlength{\DUtablewidth}{\linewidth}
+\begin{longtable*}[c]{|p{0.110\DUtablewidth}|p{0.726\DUtablewidth}|}
+\hline
+\textbf{%
+Flag
+} & \textbf{%
+Calculates \& Outputs
+} \\
+\hline
+\endfirsthead
+\hline
+\textbf{%
+Flag
+} & \textbf{%
+Calculates \& Outputs
+} \\
+\hline
+\endhead
+\multicolumn{2}{c}{\hfill ... continued on next page} \\
+\endfoot
+\endlastfoot
+
+-Dpsixy
+ & 
+Barotropic stream function in lon-lat coordinates
+ \\
+\hline
+
+-Dpsixz
+ & 
+Zonal overturning stream function in model coordinates
+ \\
+\hline
+
+-Dpsixr
+ & 
+Zonal overturining stream function in tracer coordinates
+ \\
+\hline
+
+-Dpsiyz
+ & 
+Meridional overturning stream function in model coordinates
+ \\
+\hline
+
+-Dpsiyr
+ & 
+Meridional overturning stream function in tracer coordinates
+ \\
+\hline
+
+-Dpsirr
+ & 
+Stream function in tracer-tracer coordinates
+ \\
+\hline
+\end{longtable*}
+
+
+\subsection{Namelist%
+  \label{namelist}%
+}
+
+The namelist controls a variety of settings.
+
+\setlength{\DUtablewidth}{\linewidth}
+\begin{longtable*}[c]{|p{0.179\DUtablewidth}|p{0.656\DUtablewidth}|}
+\hline
+\textbf{%
+TIME
+} & \textbf{%} \\
+\hline
+\endfirsthead
+\hline
+\textbf{%
+TIME
+} & \textbf{%} \\
+\hline
+\endhead
+\multicolumn{2}{c}{\hfill ... continued on next page} \\
+\endfoot
+\endlastfoot
+
+yearstart
+ & 
+Starting year
+ \\
+\hline
+
+monstart
+ & 
+Starting month
+ \\
+\hline
+
+daystart
+ & 
+Starting day
+ \\
+\hline
+
+hourstart
+ & 
+Starting hour
+ \\
+\hline
+
+hourstep
+ & 
+Time (in hours) between model output
+ \\
+\hline
+
+intsend
+ & 
+Number of time steps to analyse
+ \\
+\hline
+\end{longtable*}
+
+\setlength{\DUtablewidth}{\linewidth}
+\begin{longtable*}[c]{|p{0.179\DUtablewidth}|p{0.656\DUtablewidth}|}
+\hline
+\textbf{%
+DIR
+} & \textbf{%} \\
+\hline
+\endfirsthead
+\hline
+\textbf{%
+DIR
+} & \textbf{%} \\
+\hline
+\endhead
+\multicolumn{2}{c}{\hfill ... continued on next page} \\
+\endfoot
+\endlastfoot
+
+inDataDir
+ & 
+Folder for data to be analysed
+ \\
+\hline
+
+outDataDir
+ & 
+Folder for storing analysis output
+ \\
+\hline
+
+tmpDataDir
+ & 
+Folder for storing temporary files, e.g. scratch disk
+ \\
+\hline
+
+topoDir
+ & 
+Folder for topography data, e.g. grid/orography
+ \\
+\hline
+\end{longtable*}
+
+\setlength{\DUtablewidth}{\linewidth}
+\begin{longtable*}[c]{|p{0.179\DUtablewidth}|p{0.656\DUtablewidth}|}
+\hline
+\textbf{%
+FILE
+} & \textbf{%} \\
+\hline
+\endfirsthead
+\hline
+\textbf{%
+FILE
+} & \textbf{%} \\
+\hline
+\endhead
+\multicolumn{2}{c}{\hfill ... continued on next page} \\
+\endfoot
+\endlastfoot
+
+project
+ & 
+Project to run. See list further down
+ \\
+\hline
+
+prefix
+ & 
+Name of analysis run. Unique for each run
+ \\
+\hline
+\end{longtable*}
+
+\setlength{\DUtablewidth}{\linewidth}
+\begin{longtable*}[c]{|p{0.179\DUtablewidth}|p{0.656\DUtablewidth}|}
+\hline
+\textbf{%
+GRID
+} & \textbf{%} \\
+\hline
+\endfirsthead
+\hline
+\textbf{%
+GRID
+} & \textbf{%} \\
+\hline
+\endhead
+\multicolumn{2}{c}{\hfill ... continued on next page} \\
+\endfoot
+\endlastfoot
+
+imt
+ &  \\
+\hline
+
+jmt
+ &  \\
+\hline
+
+km
+ &  \\
+\hline
+
+mr
+ &  \\
+\hline
+
+mr2
+ &  \\
+\hline
+
+nrst
+ &  \\
+\hline
+
+lbas
+ &  \\
+\hline
+\end{longtable*}
+
+\setlength{\DUtablewidth}{\linewidth}
+\begin{longtable*}[c]{|p{0.179\DUtablewidth}|p{0.656\DUtablewidth}|}
+\hline
+\textbf{%
+COORD
+} & \textbf{%} \\
+\hline
+\endfirsthead
+\hline
+\textbf{%
+COORD
+} & \textbf{%} \\
+\hline
+\endhead
+\multicolumn{2}{c}{\hfill ... continued on next page} \\
+\endfoot
+\endlastfoot
+
+rmin
+ &  \\
+\hline
+
+rmax
+ &  \\
+\hline
+
+tmin
+ &  \\
+\hline
+
+tmax
+ &  \\
+\hline
+
+smin
+ &  \\
+\hline
+
+smax
+ &  \\
+\hline
+
+dmin
+ &  \\
+\hline
+
+dmax
+ &  \\
+\hline
+
+mmin
+ &  \\
+\hline
+
+mmax
+ &  \\
+\hline
+
+amin
+ &  \\
+\hline
+
+amax
+ &  \\
+\hline
+\end{longtable*}
+
+\setlength{\DUtablewidth}{\linewidth}
+\begin{longtable*}[c]{|p{0.179\DUtablewidth}|p{0.656\DUtablewidth}|}
+\hline
+\textbf{%
+MISC
+} & \textbf{%} \\
+\hline
+\endfirsthead
+\hline
+\textbf{%
+MISC
+} & \textbf{%} \\
+\hline
+\endhead
+\multicolumn{2}{c}{\hfill ... continued on next page} \\
+\endfoot
+\endlastfoot
+
+lverbose
+ & 
+Verbose mode. Show extra information
+ \\
+\hline
+
+logp
+ & 
+Use log(pressure) instead of pressure
+ \\
+\hline
+
+tweak\_tmean
+ & 
+Use a temporal mean e.g. daily/monthly/annual mean
+ \\
+\hline
+
+tweak\_zmean
+ & 
+Use spatial average fields, e.g. re-grid or zonal mean.
+ \\
+\hline
+
+tweak\_tend
+ & 
+Output local tendency results
+ \\
+\hline
+
+tweak\_freq
+ & 
+If not 0 it controls the frequency of output
+ \\
+\hline
+\end{longtable*}
 
 
 \section{History%
@@ -137,7 +520,7 @@ It was then adapted for the atmosphere (ERA-Interim) by Joakim Kjellsson.
 
 \item September 2013: Added support from CanESM2, CCSM4, IPSL-CM5A, NorESM1
 
-\item December 2013: Added support for CSIRO-Mk-3-6-0
+\item December 2013: Added support for CSIRO-Mk-3-6-0, CNRM-CM5
 
 \end{itemize}
 

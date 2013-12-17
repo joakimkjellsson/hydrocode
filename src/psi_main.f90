@@ -1134,6 +1134,8 @@ PROGRAM PSIXX_IFS
       
       CASE ('CSIRO-HISTR')
          CALL get_data_csiro('HISTR')
+      case ('CSIRO-RCP85')
+         call get_data_csiro('RCP85')
       
       CASE ('ERA')
          CALL get_data_era()
