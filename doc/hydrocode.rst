@@ -12,16 +12,36 @@ A Fortran 95 code for calculating atmospheric stream functions
 Compiling and running
 =====================
 
+A Makefile and runscript are provided with the code and should be modified to fit the user's needs. 
+
 .. code:: 
 	
 	make
 	./psi.x
 
 
+The number of OpenMP threads is set by
 
+.. code::
+	
+	export OMP_NUM_THREADS=8
+	
+
+An analysis run on several threads can consume a lot of memory, so it might be necessary to set 
+
+.. code::
+	
+	ulimit -s unlimited
+	export OMP_STACKSIZE=1g
+
+or similar for other shells. 
+
+
+Data
+=====
 
 Any dataset with data on terrain-following coordinates can be used. 
-Some models use sigma, :math:`p_k = \sigma_k * p_s`, and some use hybrid, :math:`p_k = a_k * p_0 + b_k * p_s`, or :math:`p_k = a_k + b_k * p_s`. 
+Some models use sigma, :math:`p_k = \sigma_k p_s`, and some use hybrid, :math:`p_k = a_k p_0 + b_k p_s`, or :math:`p_k = a_k + b_k p_s`. 
 
 The following data has been used
 
@@ -35,6 +55,7 @@ The following data has been used
 	- CSIRO Mk3-6-0
 	- GFDL CM3
 	- IPSL CM5A
+	- MIROC5
 	- NorESM1
 
 
@@ -141,6 +162,17 @@ tweak_freq      If not 0 it controls the frequency of output
 
 
 
+Source code
+===========
+
+psi_main.f90
+------------
+
+The main program allocates much of the memory, sets up the OpenMP parallellisation, and contains the main algorithms. 
+
+
+
+
 History
 ========
 
@@ -153,7 +185,7 @@ It was then adapted for the atmosphere (ERA-Interim) by Joakim Kjellsson.
 - July 2013: Restructured code into different modules, subroutines, etc. Unified different versions. 
 - August 2013: Added preprocessing flags to control what stream functions are outputed. 
 - September 2013: Added support from CanESM2, CCSM4, IPSL-CM5A, NorESM1
-- December 2013: Added support for CSIRO-Mk-3-6-0, CNRM-CM5
+- December 2013: Added support for CSIRO-Mk-3-6-0, CNRM-CM5, MIROC5
 
 
 
