@@ -5712,7 +5712,7 @@ CONTAINS
       
       if (tweak_tend >=1) then
          
-         !call system('rm '//trim(zFile))
+         call system('rm '//trim(zFile))
          
       end if
       
@@ -5753,10 +5753,10 @@ CONTAINS
       call err(ierr)
       
       if (tweak_zmean >= 1) then
-         !call system('rm '//trim(uFile))
-         !call system('rm '//trim(vFile))
-         !call system('rm '//trim(qFile))
-         !call system('rm '//trim(tFile))
+         call system('rm '//trim(uFile))
+         call system('rm '//trim(vFile))
+         call system('rm '//trim(qFile))
+         call system('rm '//trim(tFile))
       end if
       
    end if
