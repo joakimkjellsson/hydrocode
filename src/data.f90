@@ -4952,6 +4952,15 @@ CONTAINS
       aa(:) = 0.
       bb(:) = 0.
       
+      
+   ELSE
+      
+      lfirst = .false.
+      
+   END IF
+   
+   if ( lfirst .or. (imon == 1 .and. iday == 1 .and. ihour == 0) ) then
+      
       istep = 123
       DO ji=1,12
          DO jj=1,idmax(ji,iyear)
@@ -4965,11 +4974,7 @@ CONTAINS
          END DO
       END DO
       
-   ELSE
-      
-      lfirst = .false.
-      
-   END IF
+   end if
    
    istep = steps(imon,iday,INT(FLOAT(ihour)/6.)+1)
    

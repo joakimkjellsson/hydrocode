@@ -20,7 +20,7 @@ from scipy import ndimage
 
 ##------------------------------------------------------------------------------
 
-ncFile = '/nobackup/vagn2/x_joakj/data/cnrm/psi/cnrm_historical_1980_av.nc'
+ncFile = '/nobackup/vagn2/x_joakj/data/cnrm/psi/cnrm_historical_1980_1980.nc'
 
 ##
 ## Open file and open PDF output
