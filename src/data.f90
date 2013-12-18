@@ -4137,7 +4137,7 @@ CONTAINS
          zFile2 = trim(tmpDataDir)//trim(prefix)//'z0.nc'
          
          call cdo_interp(uFile,uFile2,topoFile,tmpFile,rstring,'ua,ps',1,1,1)
-         call cdo_interp(vFile,vFile2,topoFile,tmpFile,rstring,'va',1,1,1)
+         call cdo_interp(vFile,vFile2,topoFile,tmpFile,rstring,'va',1,0,0)
          call cdo_interp(tFile,tFile2,topoFile,tmpFile,rstring,'ta',1,0,0)
          call cdo_interp(qFile,qFile2,topoFile,tmpFile,rstring,'hus',1,0,0)
          
@@ -4346,7 +4346,7 @@ CONTAINS
    CALL err(ierr)
    
          
-   IF ( (imon == 12 .AND. iday == 31 .AND. ihour == 18) .OR. llast) THEN
+   IF ( (imon == 1 .AND. iday == 1 .AND. ihour == 0) .OR. llast) THEN
       
       ierr = NF90_CLOSE(id_ncu)
       CALL err(ierr)
