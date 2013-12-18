@@ -4137,7 +4137,7 @@ CONTAINS
          zFile2 = trim(tmpDataDir)//trim(prefix)//'z0.nc'
          
          call cdo_interp(uFile,uFile2,topoFile,tmpFile,rstring,'ua,ps',1,1,1)
-         call cdo_interp(vFile,vFile2,topoFile,tmpFile,rstring,'va',1,1,1)
+         call cdo_interp(vFile,vFile2,topoFile,tmpFile,rstring,'va',1,0,0)
          call cdo_interp(tFile,tFile2,topoFile,tmpFile,rstring,'ta',1,0,0)
          call cdo_interp(qFile,qFile2,topoFile,tmpFile,rstring,'hus',1,0,0)
          
@@ -4346,7 +4346,7 @@ CONTAINS
    CALL err(ierr)
    
          
-   IF ( (imon == 12 .AND. iday == 31 .AND. ihour == 18) .OR. llast) THEN
+   IF ( (imon == 1 .AND. iday == 1 .AND. ihour == 0) .OR. llast) THEN
       
       ierr = NF90_CLOSE(id_ncu)
       CALL err(ierr)
@@ -4952,6 +4952,15 @@ CONTAINS
       aa(:) = 0.
       bb(:) = 0.
       
+      
+   ELSE
+      
+      lfirst = .false.
+      
+   END IF
+   
+   if ( lfirst .or. (imon == 1 .and. iday == 1 .and. ihour == 0) ) then
+      
       istep = 123
       DO ji=1,12
          DO jj=1,idmax(ji,iyear)
@@ -4965,11 +4974,7 @@ CONTAINS
          END DO
       END DO
       
-   ELSE
-      
-      lfirst = .false.
-      
-   END IF
+   end if
    
    istep = steps(imon,iday,INT(FLOAT(ihour)/6.)+1)
    
@@ -4999,10 +5004,8 @@ CONTAINS
    dzt(:,:,:,1) = dzt(:,:,:,2)
    dzt(:,:,:,2) = 0.
    
-   IF (lverbose) THEN
-      PRINT*,' Day, month, step ',iday, imon, istep
-   END IF
-      
+   PRINT*,' Day, month, step ',iday, imon, istep
+         
    IF (istep == 1 .OR. lfirst) THEN
       
       !!
@@ -5013,7 +5016,48 @@ CONTAINS
          
          CASE ('HISTR')
             
-            string='000000000600-00000000000000.nc'
+            string='000000000600-000000000000.nc'
+            
+            WRITE (string(1:4),   '(i4.4)') iyear
+            WRITE (string(5:6),   '(i2.2)') imon
+            WRITE (string(7:8),   '(i2.2)') 1
+            IF (imon == 12) THEN
+               WRITE (string(14:17), '(i4.4)') iyear+1
+               WRITE (string(18:19), '(i2.2)') 1
+            ELSE
+               WRITE (string(14:17), '(i4.4)') iyear
+               WRITE (string(18:19), '(i2.2)') imon + 1
+            END IF
+            WRITE (string(20:21), '(i2.2)') 1
+            
+            IF ( iday == 1 .AND. ihour == 0 ) THEN
+               WRITE (string(5:6),   '(i2.2)') imon-1
+               IF ( imon == 1 ) THEN
+                  WRITE (string(1:4),   '(i4.4)') iyear-1
+                  WRITE (string(5:6),   '(i2.2)') 12   
+               END IF
+            END IF
+            
+            dataprefix='6hrLev_CNRM-CM5_historical_r1i1p1_'//TRIM(string)
+            string='/0000/'
+            
+            if ( iday == 1 .and. ihour == 0 ) then
+               write (string(2:5),      '(i4.4)') iyear-1
+            else
+               write (string(2:5),      '(i4.4)') iyear
+            end if
+            
+            uFile=TRIM(inDataDir)//TRIM(string)//'ua_'//TRIM(dataprefix)
+            vFile=TRIM(inDataDir)//TRIM(string)//'va_'//TRIM(dataprefix)
+            tFile=TRIM(inDataDir)//TRIM(string)//'ta_'//TRIM(dataprefix)
+            qFile=TRIM(inDataDir)//TRIM(string)//'hus_'//TRIM(dataprefix)
+            zFile=TRIM(topoDir)//'orog_fx_CNRM-CM5_historical_r0i0p0.nc'
+            topoFile=TRIM(topoDir)//'areacella_fx_CNRM-CM5_historical_r0i0p0.nc'
+            
+         CASE ('RCP85')
+            
+            string='0000010100-0000123123.nc'
+            
             WRITE (string(1:4),   '(i4.4)') iyear
             WRITE (string(5:6),   '(i2.2)') imon
             WRITE (string(7:8),   '(i2.2)') 1
@@ -5034,31 +5078,21 @@ CONTAINS
                END IF
             END IF
             
-            dataprefix='6hrLev_CNRM-CM5_historical_r1i1p1_'//TRIM(string)
+            dataprefix='6hrLev_CNRM-CM5_rcp85_r1i1p1_'//TRIM(string)
             string='/0000/'
-            WRITE (string(2:5),       '(i4)') iyear
+            
+            if ( iday == 1 .and. ihour == 0 ) then
+               write (string(2:5),      '(i4.4)') iyear-1
+            else
+               write (string(2:5),      '(i4.4)') iyear
+            end if
+            
             uFile=TRIM(inDataDir)//TRIM(string)//'ua_'//TRIM(dataprefix)
             vFile=TRIM(inDataDir)//TRIM(string)//'va_'//TRIM(dataprefix)
-            pFile=TRIM(inDataDir)//TRIM(string)//'ps_'//TRIM(dataprefix)
             tFile=TRIM(inDataDir)//TRIM(string)//'ta_'//TRIM(dataprefix)
             qFile=TRIM(inDataDir)//TRIM(string)//'hus_'//TRIM(dataprefix)
             zFile=TRIM(topoDir)//'orog_fx_CNRM-CM5_historical_r0i0p0.nc'
             topoFile=TRIM(topoDir)//'areacella_fx_CNRM-CM5_historical_r0i0p0.nc'
-            
-         CASE ('RCP85')
-            string='0000010100-0000123123.nc'
-            WRITE (string(1:4),   '(i4)') iyear
-            WRITE (string(12:15), '(i4)') iyear
-            dataprefix='6hrLev_GFDL-CM3_rcp85_r1i1p1_'//TRIM(string)
-            string='/0000/'
-            WRITE (string(2:5),       '(i4)') iyear
-            uFile=TRIM(inDataDir)//TRIM(string)//'ua_'//TRIM(dataprefix)
-            vFile=TRIM(inDataDir)//TRIM(string)//'va_'//TRIM(dataprefix)
-            pFile=TRIM(inDataDir)//TRIM(string)//'ps_'//TRIM(dataprefix)
-            tFile=TRIM(inDataDir)//TRIM(string)//'ta_'//TRIM(dataprefix)
-            qFile=TRIM(inDataDir)//TRIM(string)//'hus_'//TRIM(dataprefix)
-            zFile=TRIM(topoDir)//'orog_fx_GFDL-CM3_historical_r0i0p0.nc'
-            topoFile=TRIM(topoDir)//'areacella_fx_GFDL-CM3_historical_r0i0p0.nc'
          
       END SELECT
       
@@ -5076,9 +5110,9 @@ CONTAINS
          zFile2 = trim(tmpDataDir)//trim(prefix)//'z0.nc'
          
          call cdo_interp(uFile,uFile2,topoFile,tmpFile,rstring,'ua,ps',1,1,1)
-         call cdo_interp(vFile,vFile2,topoFile,tmpFile,rstring,'va',1,1,1)
-         call cdo_interp(tFile,tFile2,topoFile,tmpFile,rstring,'ta',1,1,1)
-         call cdo_interp(qFile,qFile2,topoFile,tmpFile,rstring,'hus',1,1,1)
+         call cdo_interp(vFile,vFile2,topoFile,tmpFile,rstring,'va',1,0,0)
+         call cdo_interp(tFile,tFile2,topoFile,tmpFile,rstring,'ta',1,0,0)
+         call cdo_interp(qFile,qFile2,topoFile,tmpFile,rstring,'hus',1,0,0)
          
          uFile = uFile2
          vFile = vFile2
@@ -5208,6 +5242,7 @@ CONTAINS
       ierr = NF90_GET_VAR (id_ncu, id_p0, p0)
       CALL err(ierr)
       
+      
       !!
       !! Define dy and calculate dx
       !!
@@ -5225,7 +5260,7 @@ CONTAINS
       !!
       IF (tweak_zmean >= 1) THEN
          
-         call cdo_interp(zFile,zFile2,topoFile,tmpFile,rstring,'orog',1,0,0)
+         call cdo_interp(zFile,zFile2,topoFile,tmpFile,rstring,'orog',0,0,0)
          zFile = zFile2
          
       END IF
@@ -5235,12 +5270,15 @@ CONTAINS
       ierr = NF90_INQ_VARID (id_ncz, 'orog', id_z) 
       CALL err(ierr)
       ierr = NF90_GET_VAR (id_ncz, id_z, zxy(:,0:jmt),    start=[  1,   1], &
-      &                                               count=[IMT, JMT+1])
+      &                                                   count=[IMT, JMT+1])
       CALL err(ierr)
       ierr = NF90_CLOSE(id_ncz)
       CALL err(ierr)
+      
       IF (tweak_tend >=1) THEN
+         
          CALL SYSTEM('rm '//TRIM(zFile))
+         
       END IF
       
    END IF
@@ -5258,7 +5296,7 @@ CONTAINS
    &                                        start=[  1,     1,  1, istep], &
    &                                        count=[IMT, JMT+1, KM,     1])
    CALL err(ierr)
-   ierr = NF90_GET_VAR (id_ncp, id_p, pxy(:,0:JMT),  &
+   ierr = NF90_GET_VAR (id_ncu, id_p, pxy(:,0:JMT),  &
    &                                        start=[  1,     1, istep], &
    &                                        count=[IMT, JMT+1,     1])
    CALL err(ierr)
@@ -5273,8 +5311,6 @@ CONTAINS
       ierr = NF90_CLOSE(id_ncu)
       CALL err(ierr)
       ierr = NF90_CLOSE(id_ncv)
-      CALL err(ierr)
-      ierr = NF90_CLOSE(id_ncp)
       CALL err(ierr)
       ierr = NF90_CLOSE(id_nct)
       CALL err(ierr)
@@ -5296,6 +5332,7 @@ CONTAINS
    call a2cgrid_t(zxy(:,:),geo_i(:,:,km))
    
    rho_i(:,:,0) = aa(km) * p0 + bb(km) * pt(:,:)
+   rho_i(:,:,0) = 100.
    
    DO jk=1,KM
       
@@ -5308,25 +5345,28 @@ CONTAINS
       !! u,v -> uflux,vflux
       !!
       
-      rho_i(:,:,jk) = aa(kb) * p0 + bb(kb) * pt(:,:)
+      rho_i(:,1:jmt,jk) = aa(kb) * p0 + bb(kb) * pt(:,1:jmt)
       
       da = aa(kb) - aa(ku)
-      db = aa(kb) - bb(ku)
-      dzt(:,:,jk,2) = da * p0 + db * pt 
-      vol(:,:,jk) = dzt(:,:,jk,2) * dxdy(:,:) / dg
+      db = bb(kb) - bb(ku)
       
-      call a2cgrid_t(txyz(:,:,il),tem(:,:,jk))
-      call a2cgrid_t(qxyz(:,:,il),sal(:,:,jk))
       
-      call a2cgrid_u(uxyz(:,:,il),uxyz(:,:,il))
-      uflux(:,:,jk) = uxyz(:,:,il) * (da * p0 + db * pu) * dy(:,:) / dg
-      call a2cgrid_v(vxyz(:,:,il),vxyz(:,:,il))
-      vflux(:,:,jk) = vxyz(:,:,il) * (da * p0 + db * pv) * dx(:,:) / dg
+      dzt(:,1:jmt,jk,2) = da * p0 + db * pt(:,1:jmt) 
+      vol(:,1:jmt,jk) = dzt(:,1:jmt,jk,2) * dxdy(:,1:jmt) / dg
+      
+      call a2cgrid_t(txyz(:,0:jmt,il),tem(:,1:jmt,jk))
+      call a2cgrid_t(qxyz(:,0:jmt,il),sal(:,1:jmt,jk))
+      
+      call a2cgrid_u(uxyz(:,0:jmt,il),uxyz(:,1:jmt,il))
+      uflux(:,1:jmt,jk) = uxyz(:,1:jmt,il) * (da * p0 + db * pu(:,1:jmt)) * dy(:,1:jmt) / dg
+      call a2cgrid_v(vxyz(:,0:jmt,il),vxyz(:,0:jmt,il))
+      vflux(:,0:jmt,jk) = vxyz(:,0:jmt,il) * (da * p0 + db * pv(:,0:jmt)) * dx(:,0:jmt) / dg
       
       
    END DO
    
    DEALLOCATE( txyz, qxyz, uxyz, vxyz, pxy, pt, pu, pv )
+   
    
    !!
    !! Calculate geopotential
@@ -5336,10 +5376,7 @@ CONTAINS
    geo(:,:,1:km) = 0.5 * (geo_i(:,:,1:km) + geo_i(:,:,0:km-1))
    rho(:,:,1:km) = 0.5 * (rho_i(:,:,1:km) + rho_i(:,:,0:km-1))
    
-   PRINT*,geo_i(1,36,:)
-   PRINT*,rho_i(1,36,:)
    
-   stop
    
    !!
    !! Calculate vertical mass flux
@@ -5354,5 +5391,435 @@ CONTAINS
    END SUBROUTINE
    
    
-END MODULE
+   
+   
+   
+   SUBROUTINE get_data_miroc(run)
+   !!---------------------------------------------------------------------------
+   !!
+   !! Subroutine to get data from MIROC-AGCM6, atmospheric model of MIROC5.
+   !! Data is stored every 6h with one file every month. 
+   !!
+   !!---------------------------------------------------------------------------
+   
+   CHARACTER, INTENT(IN) :: run*5
+   
+!$OMP MASTER
+   
+   dtstep = FLOAT(hourstep) * 3600.  
+   
+   !!
+   !! Allocate dzt, dxdy and dx the first time step
+   !! and reset them
+   !!
+   if (iyear == yearstart .AND. &
+   &    imon == monstart  .AND. &
+   &    iday == daystart  .AND. &
+   &   ihour == hourstart ) THEN
+      
+      lfirst = .true.
+      
+      !!
+      !! Private arrays that will be kept throughout the integrations
+      !!
+      allocate( aa(0:KM), bb(0:KM), zxy(IMT,0:JMT), steps(12,31,4) ) 
+      
+      dzt(:,:,:,:) = 0.
+      dxdy(:,:) = 0.
+      dx(:,:) = 0.
+      dy(:,:) = 0.
+      vlat2(:) = 0.
+      aa(:) = 0.
+      bb(:) = 0.
+      
+      do ji=1,12
+         istep = 0
+         do jj=1,idmax(ji,iyear)
+            do jk=1,4
+               istep = istep + 1
+               steps(ji,jj,jk) = istep 
+            end do
+         end do
+      end do
+      
+   else
+      
+      lfirst = .false.
+      
+   end if
+   
+   istep = steps(imon,iday,INT(FLOAT(ihour)/6.)+1)
+   
+   !!
+   !! Temporary arrays
+   !!
+   
+   allocate( txyz(IMT,0:JMT,KM), &
+   &         qxyz(IMT,0:JMT,KM), &
+   &         uxyz(IMT,0:JMT,KM), &
+   &         vxyz(IMT,0:JMT,KM), &
+   &         pxy (IMT,0:JMT),    &
+   &         pt  (imt,jmt),      &
+   &         pu  (imt,jmt),      &
+   &         pv  (imt,0:jmt) )
+   
+   geo_i(:,:,:) = 0.
+   txyz(:,:,:) = 0.
+   qxyz(:,:,:) = 0.
+   uxyz(:,:,:) = 0.
+   vxyz(:,:,:) = 0.
+   pxy(:,:) = 0.
+   
+   !!
+   !! Store previous time step and reset current
+   !!
+   dzt(:,:,:,1) = dzt(:,:,:,2)
+   dzt(:,:,:,2) = 0.
+   
+   print*,' Day, month, step ',iday, imon, istep
+         
+   if (istep == 1 .or. lfirst) then
+      
+      !!
+      !! File names
+      !! One file per month
+      !!
+      select case (trim(run))
+         
+         case ('HISTR')
+            
+            string='0000000000-0000000018.nc'
+            
+            write (string(1:4),   '(i4.4)') iyear
+            write (string(5:6),   '(i2.2)') imon
+            write (string(7:8),   '(i2.2)') 1
+            write (string(12:15), '(i4.4)') iyear
+            write (string(16:17), '(i2.2)') imon
+            write (string(18:19), '(i2.2)') idmax(imon,iyear)
+            
+            dataprefix='6hrLev_MIROC5_historical_r1i1p1_'//TRIM(string)
+            string='/0000/'
+            write (string(2:5),      '(i4.4)') iyear
+                        
+            uFile=trim(inDataDir)//trim(string)//'ua_'//trim(dataprefix)
+            vFile=trim(inDataDir)//trim(string)//'va_'//trim(dataprefix)
+            tFile=trim(inDataDir)//trim(string)//'ta_'//trim(dataprefix)
+            qFile=trim(inDataDir)//trim(string)//'hus_'//trim(dataprefix)
+            zFile=trim(topoDir)//'orog_fx_MIROC5_historical_r0i0p0.nc'
+            topoFile=TRIM(topoDir)//'areacella_fx_MIROC5_historical_r0i0p0.nc'
+            
+         case ('RCP85')
+            
+            string='0000000000-0000000018.nc'
+            
+            write (string(1:4),   '(i4.4)') iyear
+            write (string(5:6),   '(i2.2)') imon
+            write (string(7:8),   '(i2.2)') 1
+            write (string(12:15), '(i4.4)') iyear
+            write (string(16:17), '(i2.2)') imon
+            write (string(18:19), '(i2.2)') idmax(imon,iyear)
+            
+            dataprefix='6hrLev_MIROC5_rcp85_r1i1p1_'//TRIM(string)
+            string='/0000/'
+            write (string(2:5),      '(i4.4)') iyear
+                        
+            uFile=trim(inDataDir)//trim(string)//'ua_'//trim(dataprefix)
+            vFile=trim(inDataDir)//trim(string)//'va_'//trim(dataprefix)
+            tFile=trim(inDataDir)//trim(string)//'ta_'//trim(dataprefix)
+            qFile=trim(inDataDir)//trim(string)//'hus_'//trim(dataprefix)
+            zFile=trim(topoDir)//'orog_fx_MIROC5_rcp85_r0i0p0.nc'
+            topoFile=TRIM(topoDir)//'areacella_fx_MIROC5_rcp85_r0i0p0.nc'
+         
+      end select
+      
+      
+      !!
+      !! Re-grid if necessary
+      !!
+      IF (tweak_zmean >= 1) THEN
+         
+         tmpFile = trim(tmpDataDir)//trim(prefix)//'tmp.nc'
+         uFile2 = trim(tmpDataDir)//trim(prefix)//'ua.nc'
+         vFile2 = trim(tmpDataDir)//trim(prefix)//'va.nc'
+         tFile2 = trim(tmpDataDir)//trim(prefix)//'ta.nc'
+         qFile2 = trim(tmpDataDir)//trim(prefix)//'hus.nc'
+         zFile2 = trim(tmpDataDir)//trim(prefix)//'z0.nc'
+         
+         call cdo_interp(uFile,uFile2,topoFile,tmpFile,rstring,'ua,ps',1,1,1)
+         call cdo_interp(vFile,vFile2,topoFile,tmpFile,rstring,'va',1,0,0)
+         call cdo_interp(tFile,tFile2,topoFile,tmpFile,rstring,'ta',1,0,0)
+         call cdo_interp(qFile,qFile2,topoFile,tmpFile,rstring,'hus',1,0,0)
+         
+         uFile = uFile2
+         vFile = vFile2
+         tFile = tFile2
+         qFile = qFile2
+      
+      END IF
+      
+      !!
+      !! Open the files and read the identifiers for the variables
+      !!
+      
+      !! U file
+      if (lverbose) then
+         print*,uFile
+      end if
+      ierr = nf90_open( uFile, nf90_share, id_ncu)
+      call err(ierr)
+      ierr = nf90_inq_varid (id_ncu, 'ua', id_u) 
+      call err(ierr)
+      
+      !! P file
+      ierr = nf90_inq_varid (id_ncu, 'ps', id_p) 
+      call err(ierr)
+      
+      !! V file
+      if (lverbose) then
+         print*,vFile
+      end if
+      ierr = nf90_open( vFile, nf90_share, id_ncv)
+      call err(ierr)
+      ierr = nf90_inq_varid (id_ncv, 'va', id_v) 
+      call err(ierr)
+      
+      !! T file
+      if (lverbose) then
+         print*,tFile
+      end if
+      ierr = nf90_open( tFile, nf90_share, id_nct)
+      call err(ierr)
+      ierr = nf90_inq_varid (id_nct, 'ta', id_t) 
+      call err(ierr)
+      
+      !! Q file
+      if (lverbose) then
+         print*,qFile
+      end if
+      ierr = nf90_open( qFile, nf90_share, id_ncq)
+      call err(ierr)
+      ierr = nf90_inq_varid (id_ncq, 'hus', id_q) 
+      call err(ierr)
+      
+      
+      !!
+      !! Check dimensions of uFile
+      !!
+      ierr = nf90_inq_dimid (id_ncu, 'lon', id_x)
+      call err(ierr)
+      ierr = nf90_inq_dimid (id_ncu, 'lat', id_y)
+      call err(ierr)
+      ierr = nf90_inq_dimid (id_ncu, 'lev', id_ml)
+      call err(ierr)
+      
+      ierr = nf90_inquire_dimension (id_ncu, id_x, len=imt2)
+      call err(ierr)
+      ierr = nf90_inquire_dimension (id_ncu, id_y, len=jmt2)
+      call err(ierr)
+      ierr = nf90_inquire_dimension (id_ncu, id_ml, len=km2)
+      call err(ierr)
+      
+      !! Test so that IMT, JMT, KM that has been set agrees with the data
+      if (imt2 /= imt) then
+         print*,' Error: IMT in the data is not as you have set it! '
+         print*,imt,imt2
+         stop
+      end if
+      if (jmt2 /= jmt+1) then
+         print*,' Error: JMT in the data is not as you have set it! '
+         print*,jmt,jmt2
+         stop
+      end if
+      if (km2 /= km) then
+         print*,' Error: KM in the data is not as you have set it! '
+         print*,km,km2
+         stop
+      end if
+      
+   end if
+   
+   if (lfirst) then
+      
+      if (lverbose) then
+         print*,' Reading lon, lat, lev, A(k), B(k) '
+      end if
+      
+      !!
+      !! Read topography and grid info from separate files
+      !!
+      ierr = nf90_inq_varid (id_ncu, 'lon', id_lon)
+      call err(ierr)
+      ierr = nf90_inq_varid (id_ncu, 'lat', id_lat)
+      call err(ierr)
+      ierr = nf90_inq_varid (id_ncu, 'lev', id_lev)
+      call err(ierr)
+      ierr = nf90_inq_varid (id_ncu, 'a_bnds', id_a)
+      call err(ierr)
+      ierr = nf90_inq_varid (id_ncu, 'b_bnds', id_b)
+      call err(ierr)
+      ierr = nf90_inq_varid (id_ncu, 'p0', id_p0)
+      call err(ierr)
+      
+      ierr = nf90_get_var (id_ncu, id_lon, vlon, start=[1], count=[IMT])
+      call err(ierr)
+      ierr = nf90_get_var (id_ncu, id_lat, vlat2(0:jmt), start=[1], count=[JMT+1])
+      call err(ierr)
+      ierr = nf90_get_var (id_ncu, id_lev, vlev, start=[1], count=[KM])
+      call err(ierr)
+      
+      ierr = nf90_get_var (id_ncu, id_a, aa(1:KM), start=[2,1], count=[1,KM])
+      call err(ierr)
+      ierr = nf90_get_var (id_ncu, id_a, aa(0:KM-1), start=[1,1], count=[1,KM])
+      call err(ierr)
+      ierr = nf90_get_var (id_ncu, id_b, bb(1:KM), start=[2,1], count=[1,KM])
+      call err(ierr)
+      ierr = nf90_get_var (id_ncu, id_b, bb(0:KM-1), start=[1,1], count=[1,KM])
+      call err(ierr)
+      ierr = nf90_get_var (id_ncu, id_p0, p0)
+      call err(ierr)
+      
+      !!
+      !! Define dy and calculate dx
+      !!
+      call calc_dxdy()
+      
+      if (lverbose) then
+         print*,'dx(1,:)',dx(1,:)
+         print*,'dy(1,:)',dy(1,:)
+         print*,'dxdy(1,:)',dxdy(1,:)
+      end if
+      
+      
+      !!
+      !! Read orography (Z file)
+      !!
+      if (tweak_zmean >= 1) then
+         
+         call cdo_interp(zFile,zFile2,topoFile,tmpFile,rstring,'orog',0,0,0)
+         zFile = zFile2
+         
+      end if
+      
+      ierr = nf90_open( zFile, NF90_SHARE, id_ncz)
+      call err(ierr)
+      ierr = nf90_inq_varid (id_ncz, 'orog', id_z) 
+      call err(ierr)
+      ierr = nf90_get_var (id_ncz, id_z, zxy(:,0:jmt),    start=[  1,   1], &
+      &                                                   count=[IMT, JMT+1])
+      call err(ierr)
+      ierr = nf90_close(id_ncz)
+      call err(ierr)
+      
+      if (tweak_tend >=1) then
+         
+         call system('rm '//trim(zFile))
+         
+      end if
+      
+   end if
+   
+   
+   ierr = nf90_get_var (id_ncu, id_u, uxyz(:,0:JMT,:), &
+   &                                        start=[  1,     1,  1, istep],     &
+   &                                        count=[IMT, JMT+1, KM,     1])
+   call err(ierr)
+   ierr = nf90_get_var (id_ncv, id_v, vxyz(:,0:JMT,:), &
+   &                                        start=[  1,     1,  1, istep], &
+   &                                        count=[IMT, JMT+1, KM,     1])
+   call err(ierr)
+   ierr = nf90_get_var (id_nct, id_t, txyz(:,0:JMT,:), &
+   &                                        start=[  1,     1,  1, istep], &
+   &                                        count=[IMT, JMT+1, KM,     1])
+   call err(ierr)
+   ierr = nf90_get_var (id_ncu, id_p, pxy(:,0:JMT),  &
+   &                                        start=[  1,     1, istep], &
+   &                                        count=[IMT, JMT+1,     1])
+   call err(ierr)
+   ierr = nf90_get_var (id_ncq, id_q, qxyz(:,0:JMT,:), &
+   &                                        start=[  1,     1,  1, istep], &
+   &                                        count=[IMT, JMT+1, KM,     1])
+   call err(ierr)
+   
+         
+   if ( (iday == idmax(imon,iyear) .and. ihour == 18) .or. llast) then
+      
+      ierr = nf90_close(id_ncu)
+      call err(ierr)
+      ierr = nf90_close(id_ncv)
+      call err(ierr)
+      ierr = nf90_close(id_nct)
+      call err(ierr)
+      ierr = nf90_close(id_ncq)
+      call err(ierr)
+      
+      if (tweak_zmean >= 1) then
+         call system('rm '//trim(uFile))
+         call system('rm '//trim(vFile))
+         call system('rm '//trim(qFile))
+         call system('rm '//trim(tFile))
+      end if
+      
+   end if
+   
+   call a2cgrid_u(pxy(:,:),pu(:,:))
+   call a2cgrid_v(pxy(:,:),pv(:,:))
+   call a2cgrid_t(pxy(:,:),pt(:,:))
+   call a2cgrid_t(zxy(:,:),geo_i(:,:,km))
+   
+   rho_i(:,:,0) = aa(km) * p0 + bb(km) * pt(:,:)
+   rho_i(:,:,0) = 100.
+   
+   do jk=1,KM
+      
+      il = km - jk + 1
+      ku = km - jk + 1
+      kb = km - jk
+      
+      !!
+      !! A-grid -> C-grid 
+      !! u,v -> uflux,vflux
+      !!
+      
+      rho_i(:,:,jk) = aa(kb) * p0 + bb(kb) * pt(:,:)
+      
+      da = aa(kb) - aa(ku)
+      db = bb(kb) - bb(ku)
+      dzt(:,:,jk,2) = da * p0 + db * pt 
+      vol(:,:,jk) = dzt(:,:,jk,2) * dxdy(:,:) / dg
+      
+      call a2cgrid_t(txyz(:,:,il),tem(:,:,jk))
+      call a2cgrid_t(qxyz(:,:,il),sal(:,:,jk))
+      
+      call a2cgrid_u(uxyz(:,:,il),uxyz(:,:,il))
+      uflux(:,:,jk) = uxyz(:,:,il) * (da * p0 + db * pu) * dy(:,:) / dg
+      call a2cgrid_v(vxyz(:,:,il),vxyz(:,:,il))
+      vflux(:,:,jk) = vxyz(:,:,il) * (da * p0 + db * pv) * dx(:,:) / dg
+      
+      
+   end do
+   
+   deallocate( txyz, qxyz, uxyz, vxyz, pxy, pt, pu, pv )
+   
+   !!
+   !! Calculate geopotential
+   !!
+   call int_geo()
+   
+   geo(:,:,1:km) = 0.5 * (geo_i(:,:,1:km) + geo_i(:,:,0:km-1))
+   rho(:,:,1:km) = 0.5 * (rho_i(:,:,1:km) + rho_i(:,:,0:km-1))
+   
+   
+   !!
+   !! Calculate vertical mass flux
+   !!
+   call calc_wflux()
+   
+!$OMP END MASTER
+   
 
+   return
+   
+   end subroutine
+   
+   
+end module

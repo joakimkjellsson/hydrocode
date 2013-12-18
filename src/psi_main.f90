@@ -30,7 +30,7 @@ PROGRAM PSIXX_IFS
 !!                             
 !!  EDIT Sept. 2013:    v1.2 Added support for CCSM4, IPSL-CM5A-LR,
 !!                           CanESM2, NorESM1
-!!  EDIT Dec. 2013:     v1.2 Added support for CSIRO-Mk3-6-0
+!!  EDIT Dec. 2013:     v1.2 Added support for CSIRO-Mk3-6-0, MIROC5
 !!
 !!------------------------------------------------------------------------------
    
@@ -427,24 +427,24 @@ PROGRAM PSIXX_IFS
    PRINT*,'                                                                    '
    SELECT CASE (TRIM(project))
       
-      CASE ('CanESM2-HISTR')
+      case ('CanESM2-HISTR')
          PRINT*,' Analysing CanESM historical simulation, T63L35 '
          ical = 1   !365-day year 
-      CASE ('CanESM2-RCP85')
+      case ('CanESM2-RCP85')
          PRINT*,' Analysing CanESM RCP 8.5 simulation, T63L35 '
          ical = 1   !365-day year
       
-      CASE ('CCSM-HISTR')
+      case ('CCSM-HISTR')
          PRINT*,' Analysing CCSM4 simulation, f9L26 '
          ical = 1   !365-day year 
-      CASE ('CCSM-RCP85')
+      case ('CCSM-RCP85')
          PRINT*,' Analysing CCSM4 RCP8.5 simulation, f9L26 '
          ical = 1
       
-      CASE ('CNRM-HISTR')
+      case ('CNRM-HISTR')
          PRINT*,' Analysing CNRM-CM5 historical simulation, T127,L31'
          ical = 0
-      CASE ('CNRM-RCP85')
+      case ('CNRM-RCP85')
          PRINT*,' Analysing CNRM-CM5 RCP8.5 simulation, T127L31 '
          ical = 0
       
@@ -455,63 +455,70 @@ PROGRAM PSIXX_IFS
          print*,' Analysing CSIRO-Mk3-6-0 RCP8.5 simulation, T63,L18 '
          ical = 1
       
-      CASE ('ERA')
+      case ('ERA')
          PRINT*,' Analysing ERA-Interim reanalysis data, T255L60 '
          ical = 0
       
-      CASE ('GFDL-AMIP')
+      case ('GFDL-AMIP')
          PRINT*,' Analysing GFDL AMIP control simulation '
          ical = 0
-      CASE ('GFDL-HISTR')
+      case ('GFDL-HISTR')
          PRINT*,' Analysing GFDL historical simulation, C48L48 '
          ical = 1   !365-day year
-      CASE ('GFDL-RCP85')
+      case ('GFDL-RCP85')
          PRINT*,' Analysing GFDL RCP 8.5 simulation, C48L48 '
          ical = 1   !365-day year
       
-      CASE ('GISS-HISTR')
+      case ('GISS-HISTR')
          PRINT*,' Analysing GISS-E2-R historical simulation '
          ical = 1   !365-day year
       
-      CASE ('HAD-HIST')
+      case ('HAD-HIST')
          PRINT*,' Analysing HadGEM historical simulation, N96L38 '
          ical = 2   !360-day year (all months 30 days)
       
-      CASE ('IFS-SHC')
+      case ('IFS-SHC')
          PRINT*,' Analysing EC-Earth historical simulation, T159L62 '
          ical = 0  !Leap year
-      CASE ('IFS-SS41')
+      case ('IFS-SS41')
          PRINT*,' Analysing EC-Earth RCP4.5 simulation, T159L62 '
          ical = 0
-      CASE ('IFS-SS81')
+      case ('IFS-SS81')
          PRINT*,' Analysing EC-Earth RCP8.5 simulation, T159L62 ' 
          ical = 0
       
-      CASE ('IPSL-HISTR')
+      case ('IPSL-HISTR')
          PRINT*,' Analysing IPSL-CM5A historical simulation, 144x143xL39 '
          ical = 1   !365-day year 
-      CASE ('IPSL-RCP85')
+      case ('IPSL-RCP85')
          PRINT*,' Analysing IPSL-CM5A RCP 8.5 simulation, 144x143xL39 '
          ical = 1   !365-day year
          
       
-      CASE ('MERRA')
+      case ('MERRA')
          PRINT*,' Analysing MERRA reanalysis data '
          ical = 0
       
-      
-      CASE ('NorESM1-HISTR')
+      case ('MIROC5-HISTR')
+         print*,' Analysing MIROC5 historical simulation, T85L40 '
+         ical = 1 !no leap
+      case ('MIROC5-RCP85')
+         print*,' Analysing MIROC5 RCP8.5 simulation, T85L40 '
+         ical = 1 !no leap
+         
+      case ('NorESM1-HISTR')
          PRINT*,' Analysing NorESM1-M historical simulation, f19L26 '
          ical = 1   !365-day year       
-      CASE ('NorESM1-RCP85')
+      case ('NorESM1-RCP85')
          PRINT*,' Analysing NorESM1-M RCP 8.5 simulation, f19L26 '
          ical = 1   !365-day year              
       
-      CASE DEFAULT
+      case default
          PRINT*,' Run: ',TRIM(project)
          PRINT*,' This project is not implemented yet. Stopping. '
          STOP
-   END SELECT
+   
+   end select
    
    SELECT CASE (ical)
       CASE(0)
@@ -1167,6 +1174,11 @@ PROGRAM PSIXX_IFS
       
       CASE ('MERRA')
          CALL get_data_merra()
+      
+      case ('MIROC5-HISTR')
+         call get_data_miroc('HISTR')
+      case ('MIROC5-RCP85')
+         call get_data_miroc('RCP85')
       
       CASE ('NorESM1-HISTR')
          CALL get_data_noresm('ESM1-HISTR')
