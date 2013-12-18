@@ -4952,6 +4952,15 @@ CONTAINS
       aa(:) = 0.
       bb(:) = 0.
       
+      
+   ELSE
+      
+      lfirst = .false.
+      
+   END IF
+   
+   if ( lfirst .or. (imon == 1 .and. iday == 1 .and. ihour == 0) ) then
+      
       istep = 123
       DO ji=1,12
          DO jj=1,idmax(ji,iyear)
@@ -4965,11 +4974,7 @@ CONTAINS
          END DO
       END DO
       
-   ELSE
-      
-      lfirst = .false.
-      
-   END IF
+   end if
    
    istep = steps(imon,iday,INT(FLOAT(ihour)/6.)+1)
    
@@ -5707,7 +5712,7 @@ CONTAINS
       
       if (tweak_tend >=1) then
          
-         call system('rm '//trim(zFile))
+         !call system('rm '//trim(zFile))
          
       end if
       
@@ -5736,7 +5741,7 @@ CONTAINS
    call err(ierr)
    
          
-   if ( (iday == 1 .and. ihour == 0) .or. llast) then
+   if ( (iday == idmax(imon,iyear) .and. ihour == 18) .or. llast) then
       
       ierr = nf90_close(id_ncu)
       call err(ierr)
@@ -5748,10 +5753,10 @@ CONTAINS
       call err(ierr)
       
       if (tweak_zmean >= 1) then
-         call system('rm '//trim(uFile))
-         call system('rm '//trim(vFile))
-         call system('rm '//trim(qFile))
-         call system('rm '//trim(tFile))
+         !call system('rm '//trim(uFile))
+         !call system('rm '//trim(vFile))
+         !call system('rm '//trim(qFile))
+         !call system('rm '//trim(tFile))
       end if
       
    end if
@@ -5778,7 +5783,7 @@ CONTAINS
       rho_i(:,:,jk) = aa(kb) * p0 + bb(kb) * pt(:,:)
       
       da = aa(kb) - aa(ku)
-      db = aa(kb) - bb(ku)
+      db = bb(kb) - bb(ku)
       dzt(:,:,jk,2) = da * p0 + db * pt 
       vol(:,:,jk) = dzt(:,:,jk,2) * dxdy(:,:) / dg
       
@@ -5798,16 +5803,11 @@ CONTAINS
    !!
    !! Calculate geopotential
    !!
-   print*,geo_i(1,36,:)
-   print*,rho_i(1,36,:)
-   
    call int_geo()
    
    geo(:,:,1:km) = 0.5 * (geo_i(:,:,1:km) + geo_i(:,:,0:km-1))
    rho(:,:,1:km) = 0.5 * (rho_i(:,:,1:km) + rho_i(:,:,0:km-1))
    
-   print*,geo(1,36,:)
-   print*,rho(1,36,:)
    
    !!
    !! Calculate vertical mass flux
@@ -5815,7 +5815,7 @@ CONTAINS
    call calc_wflux()
    
 !$OMP END MASTER
-
+   
 
    return
    
