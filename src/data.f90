@@ -5056,21 +5056,21 @@ CONTAINS
             
          CASE ('RCP85')
             
-            string='0000010100-0000123123.nc'
+            string='0000000006-0000000000.nc'
             
             WRITE (string(1:4),   '(i4.4)') iyear
             WRITE (string(5:6),   '(i2.2)') imon
             WRITE (string(7:8),   '(i2.2)') 1
             IF (imon == 12) THEN
-               WRITE (string(14:17), '(i4.4)') iyear+1
+               WRITE (string(12:15), '(i4.4)') iyear+1
                WRITE (string(5:6),   '(i2.2)') 1
             ELSE
-               WRITE (string(14:17), '(i4.4)') iyear
-               WRITE (string(18:19), '(i2.2)') imon + 1
+               WRITE (string(12:15), '(i4.4)') iyear
+               WRITE (string(16:17), '(i2.2)') imon + 1
             END IF
-            WRITE (string(20:21), '(i2.2)') 1
+            WRITE (string(18:19), '(i2.2)') 1
             
-            IF ( iday == 1 .AND. ihour == 6 ) THEN
+            IF ( iday == 1 .AND. ihour == 0 ) THEN
                WRITE (string(5:6),   '(i2.2)') imon-1
                IF ( imon == 1 ) THEN
                   WRITE (string(1:4),   '(i4.4)') iyear-1
@@ -5091,8 +5091,8 @@ CONTAINS
             vFile=TRIM(inDataDir)//TRIM(string)//'va_'//TRIM(dataprefix)
             tFile=TRIM(inDataDir)//TRIM(string)//'ta_'//TRIM(dataprefix)
             qFile=TRIM(inDataDir)//TRIM(string)//'hus_'//TRIM(dataprefix)
-            zFile=TRIM(topoDir)//'orog_fx_CNRM-CM5_historical_r0i0p0.nc'
-            topoFile=TRIM(topoDir)//'areacella_fx_CNRM-CM5_historical_r0i0p0.nc'
+            zFile=TRIM(topoDir)//'orog_fx_CNRM-CM5_rcp85_r0i0p0.nc'
+            topoFile=TRIM(topoDir)//'areacella_fx_CNRM-CM5_rcp85_r0i0p0.nc'
          
       END SELECT
       
