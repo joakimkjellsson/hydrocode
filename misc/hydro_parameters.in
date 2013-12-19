@@ -1,0 +1,66 @@
+!!----------------------------------------------
+!!
+!!   Namelist for computing stream functions
+!!
+!!
+!!   Joakim Kjellsson
+!!
+!!----------------------------------------------
+
+&TIME
+  yearstart=1980,
+  monstart=1,
+  daystart=1,
+  hourstart=6,
+  hourstep=6,
+  intsend=1459,
+  /
+
+&DIR
+  inDataDir='/nobackup/global/x_joakj/data/csiro/historical/',
+  outDataDir='/nobackup/global/x_joakj/data/csiro/psi/',
+  tmpDataDir='/nobackup/global/x_joakj/data/',
+  topoDir='/nobackup/global/x_joakj/data/csiro/topo/',
+  /
+
+&FILE
+  project='CSIRO-HISTR',
+  prefix=csiro_historical_1980,
+  /
+
+&GRID
+  IMT=144,
+  JMT=72,
+  KM=18,
+  MR=251,  !Number of points for psi(r,r) stream functions
+  MR2=15,  !Number of points for isobaric averages and meridional overturning
+  NRST=3,  !1-q, 2-dse, 3-mse, 4-t, 5-mse, 6-alpha
+  LBAS=1   !1=NH, 2=SH, 3=Total
+  /
+
+&COORD
+  rmin = 0.,
+  rmax = 1100.,
+  tmin = 173.,
+  tmax = 323.,
+  smin = -2.,
+  smax = 28.,
+  dmin = 240.,
+  dmax = 360.,
+  mmin = 240.,
+  mmax = 440.,
+  amin = 0.5,
+  amax = 6.,
+  /
+
+&MISC
+  lverbose   = .false.,
+  logp       = .false.,
+  tweak_tmean = 0,
+  tweak_zmean = 1,
+  tweak_tend  = -1,
+  tweak_freq  = 0,
+  /  
+    
+!!----------------------------------------------
+
