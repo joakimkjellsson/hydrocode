@@ -103,7 +103,7 @@ PROGRAM PSIXX_IFS
    
    REAL*4                                        ::  dr, dt, ds, dd, dm,   &
    &                                                 dr2, dt2, ds2, dd2, dm2,  &
-   &                                                 lh, da, da2
+   &                                                 lh, da, da2, tmp1, tmp2
 
    
    REAL*4, ALLOCATABLE, DIMENSION(:,:,:)         ::  psiz, psiz_av,            &
@@ -505,6 +505,13 @@ PROGRAM PSIXX_IFS
       case ('MIROC5-RCP85')
          print*,' Analysing MIROC5 RCP8.5 simulation, T85L40 '
          ical = 1 !no leap
+      
+      case ('MRI-CGCM3-HISTR')
+         print*,' Analysing MRI-CGCM3 historical simulation, TL159 L48 '
+         ical = 0 !gregorian
+      case ('MRI-CGCM3-RCP85')
+         print*,' Analysing MRI-CGCM3 RCP8.5 simulation, TL159 L48 '
+         ical = 0 !gregorian
          
       case ('NorESM1-HISTR')
          PRINT*,' Analysing NorESM1-M historical simulation, f19L26 '
@@ -1179,6 +1186,11 @@ PROGRAM PSIXX_IFS
          call get_data_miroc('HISTR')
       case ('MIROC5-RCP85')
          call get_data_miroc('RCP85')
+      
+      case ('MRI-CGCM3-HISTR')
+         call get_data_mri('HISTR')
+      case ('MRI-CGCM3-RCP85')
+         call get_data_mri('RCP85')
       
       CASE ('NorESM1-HISTR')
          CALL get_data_noresm('ESM1-HISTR')
