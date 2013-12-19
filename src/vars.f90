@@ -30,11 +30,13 @@ MODULE mod_vars
    &                                                 pi = 3.141592653589793238,&
    &                                                 dg = 9.81,                &
    &                                                 Rd = 287.05d0,            &
+   &                                                 Rv = 461.5,               &
    &                                                 Lv = 2.5d+6,              &
    &                                                 cp = 1004.d0 
    
    INTEGER :: ihour, iday, imon, iyear, yearstart, monstart,daystart,hourstart,&
-   &          hourstep, tweak_tmean, tweak_zmean, tweak_tend, tweak_freq
+   &          hourstep, tweak_tmean, tweak_zmean, tweak_tend, tweak_freq,      &
+   &          tweak_entropy
    
    INTEGER, DIMENSION(12,1000:3000)              ::  idmax
    

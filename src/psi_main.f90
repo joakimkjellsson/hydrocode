@@ -156,10 +156,24 @@ PROGRAM PSIXX_IFS
    
 !!------------------------------------------------------------------------------
 
-
+   
+   !!
+   !! Initialise
+   !!
    DATA mois/31,28,31,30,31,30,31,31,30,31,30,31/
    
+   lverbose = .false.
+   logp = .false.
+   tweak_tmean = 0
+   tweak_zmean = 0
+   tweak_tend = 0 
+   tweak_freq = 0
+   tweak_entropy = 0
    
+   
+   !!
+   !! Read namelist
+   !! 
    NAMELIST /TIME/    yearstart,monstart,daystart,hourstart,hourstep,intsend
    NAMELIST /DIR/     inDataDir,outDataDir,tmpDataDir,topoDir
    NAMELIST /FILE/    project,prefix   
@@ -1519,20 +1533,27 @@ END IF
             IF (tem(ji,jj,jk) /= undef) THEN
                
                if (tweak_entropy == 1) then
-                  ! Vapour pressure over saturation vapour pressure
-                  tmp1 = 611. * exp(Lv/(Rv*273.)) * exp(-Lv/(Rv*tem(ji,jj,jk)))
-                  tmp2 = 0.622 * tmp1 / (rho(ji,jj,jk)-tmp1)
+                  
+                  ! Saturation vapour pressure from C-C
+                  tmp1 = 611. * exp( Lv/(Rv*273.) - Lv/(Rv*tem(ji,jj,jk)) ) ![Pa]
+                  ! Saturation specific humidity
+                  tmp2 = 0.622 * tmp1 / (rho(ji,jj,jk)-tmp1) ![kg/kg]
+                  
                   ! Potential temperature
                   dse(ji,jj,jk) = tem(ji,jj,jk) * (100000./rho(ji,jj,jk))**(cp/Rd) ![K]
+                  
                   ! Equivalent potential temperature
                   mse(ji,jj,jk) = dse(ji,jj,jk) * & 
                   &               exp(Lv * sal(ji,jj,jk) / (cp * tem(ji,jj,jk)) ) * & 
-                  &               tmp2/sal(ji,jj,jk) ** (sal(ji,jj,jk)*Rv/cp)      ![K]
+                  &               (tmp2/sal(ji,jj,jk)) ** (sal(ji,jj,jk)*Rv/cp)    ![K]
+                  
                else
+                  
                   ! Dry static energy at layer mid-points
                   dse(ji,jj,jk) = cp * tem(ji,jj,jk) + geo(ji,jj,jk) ![J/kg]
                   ! Moist static energy
                   mse(ji,jj,jk) = dse(ji,jj,jk) + Lv * sal(ji,jj,jk) ![J/kg]
+                  
                end if
                ! Specific volume
                alpha(ji,jj,jk) = Rd * tem(ji,jj,jk) / rho(ji,jj,jk) ![m3/kg]
