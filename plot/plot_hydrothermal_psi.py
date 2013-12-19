@@ -20,14 +20,14 @@ from scipy import ndimage
 
 ##------------------------------------------------------------------------------
 
-ncFile = '/nobackup/vagn2/x_joakj/data/cnrm/psi/cnrm_historical_1980_1980.nc'
+ncFile = '/nobackup/global/x_joakj/data/mri/psi/mri_historical_1980_1980.nc'
 
 ##
 ## Open file and open PDF output
 ##
 opt = Nio.options() 
 nc  = Nio.open_file(ncFile,'r',opt)
-wks = Ngl.open_wks('pdf','cnrm_1980')
+wks = Ngl.open_wks('pdf','mri_1980')
 
 ##
 ## Set color map

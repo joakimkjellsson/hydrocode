@@ -5928,7 +5928,7 @@ CONTAINS
             write (string(7:8),   '(i2.2)') 1
             write (string(14:17), '(i4.4)') iyear
             write (string(18:19), '(i2.2)') imon
-            write (string(19:21), '(i2.2)') idmax(imon,iyear)
+            write (string(20:21), '(i2.2)') idmax(imon,iyear)
             
             dataprefix='6hrLev_MRI-CGCM3_historical_r1i1p1_'//TRIM(string)
             string='/0000/'
@@ -5950,7 +5950,7 @@ CONTAINS
             write (string(7:8),   '(i2.2)') 1
             write (string(14:17), '(i4.4)') iyear
             write (string(18:19), '(i2.2)') imon
-            write (string(19:21), '(i2.2)') idmax(imon,iyear)
+            write (string(20:21), '(i2.2)') idmax(imon,iyear)
             
             dataprefix='6hrLev_MRI-CGCM3_rcp85_r1i1p1_'//TRIM(string)
             string='/0000/'
@@ -6150,7 +6150,7 @@ CONTAINS
       
       if (tweak_tend >=1) then
          
-         !call system('rm '//trim(zFile))
+         call system('rm '//trim(zFile))
          
       end if
       
@@ -6191,10 +6191,10 @@ CONTAINS
       call err(ierr)
       
       if (tweak_zmean >= 1) then
-         !call system('rm '//trim(uFile))
-         !call system('rm '//trim(vFile))
-         !call system('rm '//trim(qFile))
-         !call system('rm '//trim(tFile))
+         call system('rm '//trim(uFile))
+         call system('rm '//trim(vFile))
+         call system('rm '//trim(qFile))
+         call system('rm '//trim(tFile))
       end if
       
    end if
@@ -6205,7 +6205,7 @@ CONTAINS
    call a2cgrid_t(zxy(:,:),geo_i(:,:,km))
    
    rho_i(:,:,0) = aa(km) * p0 + bb(km) * pt(:,:)
-   !rho_i(:,:,0) = 100.
+   rho_i(:,:,0) = 1.
    
    do jk=1,KM
       
@@ -6241,11 +6241,6 @@ CONTAINS
    !!
    !! Calculate geopotential
    !!
-   print*,'geo'
-   print*,geo_i(1,36,:)
-   print*,'rho'
-   print*,rho_i(1,36,:)
-   
    call int_geo()
    
    geo(:,:,1:km) = 0.5 * (geo_i(:,:,1:km) + geo_i(:,:,0:km-1))
