@@ -5948,9 +5948,15 @@ CONTAINS
             write (string(1:4),   '(i4.4)') iyear
             write (string(5:6),   '(i2.2)') imon
             write (string(7:8),   '(i2.2)') 1
+<<<<<<< HEAD
             write (string(12:15), '(i4.4)') iyear
             write (string(16:17), '(i2.2)') imon
             write (string(18:19), '(i2.2)') idmax(imon,iyear)
+=======
+            write (string(14:17), '(i4.4)') iyear
+            write (string(18:19), '(i2.2)') imon
+            write (string(20:21), '(i2.2)') idmax(imon,iyear)
+>>>>>>> 992fed0b0036adf5edced1613280402f978673fa
             
             dataprefix='6hrLev_MRI-CGCM3_rcp85_r1i1p1_'//TRIM(string)
             string='/0000/'
@@ -6205,7 +6211,11 @@ CONTAINS
    call a2cgrid_t(zxy(:,:),geo_i(:,:,km))
    
    rho_i(:,:,0) = aa(km) * p0 + bb(km) * pt(:,:)
+<<<<<<< HEAD
    rho_i(:,:,0) = 0.5
+=======
+   rho_i(:,:,0) = 1.
+>>>>>>> 992fed0b0036adf5edced1613280402f978673fa
    
    do jk=1,KM
       
@@ -6242,10 +6252,13 @@ CONTAINS
    !! Calculate geopotential
    !!
    call int_geo()
+<<<<<<< HEAD
    print*,'geo'
    print*,geo_i(1,36,:)
    print*,'rho'
    print*,rho_i(1,36,:)
+=======
+>>>>>>> 992fed0b0036adf5edced1613280402f978673fa
    
    geo(:,:,1:km) = 0.5 * (geo_i(:,:,1:km) + geo_i(:,:,0:km-1))
    rho(:,:,1:km) = 0.5 * (rho_i(:,:,1:km) + rho_i(:,:,0:km-1))
