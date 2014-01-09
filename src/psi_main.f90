@@ -441,6 +441,13 @@ PROGRAM PSIXX_IFS
    PRINT*,'                                                                    '
    SELECT CASE (TRIM(project))
       
+      case ('BCC-HISTR')
+         print*,' Analysing BCC-CSM1.1 historical simulation, T42L26 '
+         ical = 1  !noleap
+      case ('BCC-RCP85')
+         print*,' Analysing BCC-CSM1.1 RCP8.5 simulation, T42L26 ' 
+         ical = 1  !noleap
+         
       case ('CanESM2-HISTR')
          PRINT*,' Analysing CanESM historical simulation, T63L35 '
          ical = 1   !365-day year 
@@ -1144,6 +1151,11 @@ PROGRAM PSIXX_IFS
    end if
    
    SELECT CASE (TRIM(project))
+      
+      case ('BCC-HISTR')
+         call get_data_bcc('HISTR')
+      case ('BCC-RCP85')
+         call get_data_bcc('RCP85')
       
       CASE ('CanESM2-HISTR')
          CALL get_data_canesm('ESM2-HISTR')

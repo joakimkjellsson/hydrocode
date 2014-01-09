@@ -5948,15 +5948,10 @@ CONTAINS
             write (string(1:4),   '(i4.4)') iyear
             write (string(5:6),   '(i2.2)') imon
             write (string(7:8),   '(i2.2)') 1
-<<<<<<< HEAD
+            
             write (string(12:15), '(i4.4)') iyear
             write (string(16:17), '(i2.2)') imon
             write (string(18:19), '(i2.2)') idmax(imon,iyear)
-=======
-            write (string(14:17), '(i4.4)') iyear
-            write (string(18:19), '(i2.2)') imon
-            write (string(20:21), '(i2.2)') idmax(imon,iyear)
->>>>>>> 992fed0b0036adf5edced1613280402f978673fa
             
             dataprefix='6hrLev_MRI-CGCM3_rcp85_r1i1p1_'//TRIM(string)
             string='/0000/'
@@ -6211,12 +6206,8 @@ CONTAINS
    call a2cgrid_t(zxy(:,:),geo_i(:,:,km))
    
    rho_i(:,:,0) = aa(km) * p0 + bb(km) * pt(:,:)
-<<<<<<< HEAD
    rho_i(:,:,0) = 0.5
-=======
-   rho_i(:,:,0) = 1.
->>>>>>> 992fed0b0036adf5edced1613280402f978673fa
-   
+      
    do jk=1,KM
       
       il = km - jk + 1
@@ -6252,14 +6243,7 @@ CONTAINS
    !! Calculate geopotential
    !!
    call int_geo()
-<<<<<<< HEAD
-   print*,'geo'
-   print*,geo_i(1,36,:)
-   print*,'rho'
-   print*,rho_i(1,36,:)
-=======
->>>>>>> 992fed0b0036adf5edced1613280402f978673fa
-   
+      
    geo(:,:,1:km) = 0.5 * (geo_i(:,:,1:km) + geo_i(:,:,0:km-1))
    rho(:,:,1:km) = 0.5 * (rho_i(:,:,1:km) + rho_i(:,:,0:km-1))
    
@@ -6271,6 +6255,401 @@ CONTAINS
    
 !$OMP END MASTER
    
+
+   return
+   
+   end subroutine
+   
+   
+   
+   subroutine get_data_bcc(run)
+   !!---------------------------------------------------------------------------
+   !!
+   !! Subroutine to get data from AGCM2.1, the atmospheric model of BCC-CSM1.1.
+   !! Data is stored every 6h with one file every year. 
+   !!
+   !!---------------------------------------------------------------------------
+   
+   character, intent(in) :: run*5
+   
+!$OMP MASTER
+   
+   dtstep = FLOAT(hourstep) * 3600.  
+   
+   !!
+   !! Allocate dzt, dxdy and dx the first time step
+   !! and reset them
+   !!
+   if (iyear == yearstart .and. &
+   &    imon == monstart  .and. &
+   &    iday == daystart  .and. &
+   &   ihour == hourstart ) then
+      
+      lfirst = .true.
+      
+      !!
+      !! Private arrays that will be kept throughout the integrations
+      !!
+      allocate( aa(0:KM), bb(0:KM), zxy(imt,0:jmt) ) 
+      
+      dzt(:,:,:,:) = 0.
+      dxdy(:,:) = 0.
+      dx(:,:) = 0.
+      dy(:,:) = 0.
+      vlat2(:) = 0.
+      aa(:) = 0.
+      bb(:) = 0.
+      
+   else
+      
+      lfirst = .false.
+      
+   end if
+   
+   if (imon == 1 .and. iday == 1 .and. ihour == 0) then
+      istep = 0
+   end if
+   istep = istep + 1
+   
+   !!
+   !! Temporary arrays
+   !!
+   
+   allocate ( txyz(imt,0:jmt,km), &
+   &          qxyz(imt,0:jmt,km), &
+   &          uxyz(imt,0:jmt,km), &
+   &          vxyz(imt,0:jmt,km), &
+   &          pxy (imt,0:jmt),    &
+   &          pu  (imt,jmt),      &
+   &          pv  (imt,0:jmt),    &
+   &          pt  (imt,jmt)  )
+   
+   geo_i(:,:,:) = 0.
+   txyz(:,:,:) = 0.
+   qxyz(:,:,:) = 0.
+   uxyz(:,:,:) = 0.
+   vxyz(:,:,:) = 0.
+   pxy(:,:) = 0.
+   
+   !!
+   !! Store previous time step and reset current
+   !!
+   dzt(:,:,:,1) = dzt(:,:,:,2)
+   dzt(:,:,:,2) = 0.
+   
+   if (lverbose) then
+      print*,' Day, month, step ',iday, imon, istep
+   end if
+      
+   if (istep == 1 .OR. lfirst) then
+      
+      !!
+      !! File names
+      !! One file per year
+      !!
+      select case (trim(run))
+         
+         case ('HISTR')
+            string='000001010000-000012311800.nc'
+            write (string(1:4),   '(i4.4)') iyear
+            write (string(14:17), '(i4.4)') iyear
+            dataprefix='6hrLev_bcc-csm1-1_historical_r1i1p1_'//trim(string)
+            string='/0000/'
+            write (string(2:5),   '(i4.4)') iyear
+            uFile = trim(inDataDir)//trim(string)//'ua_'//trim(dataprefix)
+            vFile = trim(inDataDir)//trim(string)//'va_'//trim(dataprefix)
+            tFile = trim(inDataDir)//trim(string)//'ta_'//trim(dataprefix)
+            qFile = trim(inDataDir)//trim(string)//'hus_'//trim(dataprefix)
+            zFile = trim(topoDir)//'orog_fx_bcc-csm1-1_historical_r0i0p0.nc'
+            topoFile = trim(topoDir)//'areacella_fx_bcc-csm1-1_historical_r0i0p0.nc'
+         
+         case ('RCP85')
+            string='000001010000-000012311800.nc'
+            write (string(1:4),   '(i4.4)') iyear
+            write (string(14:17), '(i4.4)') iyear
+            dataprefix='6hrLev_bcc-csm1-1_rcp85_r1i1p1_'//trim(string)
+            string='/0000/'
+            write (string(2:5),   '(i4.4)') iyear
+            uFile = trim(inDataDir)//trim(string)//'ua_'//trim(dataprefix)
+            vFile = trim(inDataDir)//trim(string)//'va_'//trim(dataprefix)
+            tFile = trim(inDataDir)//trim(string)//'ta_'//trim(dataprefix)
+            qFile = trim(inDataDir)//trim(string)//'hus_'//trim(dataprefix)
+            zFile = trim(topoDir)//'orog_fx_bcc-csm1-1_rcp85_r0i0p0.nc'
+            topoFile = trim(topoDir)//'areacella_fx_bcc-csm1-1_rcp85_r0i0p0.nc'
+         
+      end select
+      
+      
+      !!
+      !! Re-grid if necessary
+      !!
+      if (tweak_zmean >= 1) then
+         
+         tmpFile = TRIM(tmpDataDir)//TRIM(prefix)//'tmp.nc'
+         uFile2 = TRIM(tmpDataDir)//TRIM(prefix)//'ua.nc'
+         vFile2 = TRIM(tmpDataDir)//TRIM(prefix)//'va.nc'
+         tFile2 = TRIM(tmpDataDir)//TRIM(prefix)//'ta.nc'
+         qFile2 = TRIM(tmpDataDir)//TRIM(prefix)//'hus.nc'
+         
+         !call cdo_interp(uFile,uFile2,topoFile,tmpFile,rstring,'ua,ps',1,1,1)
+         !call cdo_interp(vFile,vFile2,topoFile,tmpFile,rstring,'va',1,0,0)
+         !call cdo_interp(tFile,tFile2,topoFile,tmpFile,rstring,'ta',1,0,0)
+         !call cdo_interp(qFile,qFile2,topoFile,tmpFile,rstring,'hus',1,0,0)
+                  
+         uFile = uFile2
+         vFile = vFile2
+         tFile = tFile2
+         qFile = qFile2
+      
+      end if
+      
+      !!
+      !! Open the files and read the identifiers for the variables
+      !!
+      
+      !! U file
+      IF (lverbose) THEN
+         PRINT*,uFile
+      END IF
+      ierr = NF90_OPEN( uFile, NF90_SHARE, id_ncu)
+      CALL err(ierr)
+      ierr = NF90_INQ_VARID (id_ncu, 'ua', id_u) 
+      CALL err(ierr)
+      
+      ierr = NF90_INQ_VARID (id_ncu, 'ps', id_p) 
+      CALL err(ierr)
+      
+      !! V file
+      IF (lverbose) THEN
+         PRINT*,vFile
+      END IF
+      ierr = NF90_OPEN( vFile, NF90_SHARE, id_ncv)
+      CALL err(ierr)
+      ierr = NF90_INQ_VARID (id_ncv, 'va', id_v) 
+      CALL err(ierr)
+      
+      !! T file
+      IF (lverbose) THEN
+         PRINT*,tFile
+      END IF
+      ierr = NF90_OPEN( tFile, NF90_SHARE, id_nct)
+      CALL err(ierr)
+      ierr = NF90_INQ_VARID (id_nct, 'ta', id_t) 
+      CALL err(ierr)
+      
+      !! Q file
+      IF (lverbose) THEN
+         PRINT*,qFile
+      END IF
+      ierr = NF90_OPEN( qFile, NF90_SHARE, id_ncq)
+      CALL err(ierr)
+      ierr = NF90_INQ_VARID (id_ncq, 'hus', id_q) 
+      CALL err(ierr)
+      
+      
+      !!
+      !! Check dimensions of uFile
+      !!
+      ierr = NF90_INQ_DIMID (id_ncu, 'lon', id_x)
+      CALL err(ierr)
+      ierr = NF90_INQ_DIMID (id_ncu, 'lat', id_y)
+      CALL err(ierr)
+      ierr = NF90_INQ_DIMID (id_ncu, 'lev', id_ml)
+      CALL err(ierr)
+      
+      ierr = NF90_INQUIRE_DIMENSION (id_ncu, id_x, LEN=IMT2)
+      CALL err(ierr)
+      ierr = NF90_INQUIRE_DIMENSION (id_ncu, id_y, LEN=JMT2)
+      CALL err(ierr)
+      ierr = NF90_INQUIRE_DIMENSION (id_ncu, id_ml, LEN=KM2)
+      CALL err(ierr)
+      
+      !! Test so that IMT, JMT, KM that has been set agrees with the data
+      IF (IMT2 /= IMT) THEN
+         PRINT*,' Error: IMT in the data is not as you have set it! '
+         PRINT*,IMT,IMT2
+         STOP
+      END IF
+      IF (JMT2 /= JMT+1) THEN
+         PRINT*,' Error: JMT in the data is not as you have set it! '
+         PRINT*,JMT,JMT2
+         STOP
+      END IF
+      IF (KM2 /= KM) THEN
+         PRINT*,' Error: KM in the data is not as you have set it! '
+         PRINT*,KM,KM2
+         STOP
+      END IF
+      
+   END IF
+   
+   IF (lfirst) THEN
+      
+      IF (lverbose) THEN
+         PRINT*,' Reading lon, lat, lev, A(k), B(k) '
+      END IF
+      
+      !!
+      !! Read topography and grid info from separate files
+      !!
+      ierr = NF90_INQ_VARID (id_ncu, 'lon', id_lon)
+      CALL err(ierr)
+      ierr = NF90_INQ_VARID (id_ncu, 'lat', id_lat)
+      CALL err(ierr)
+      ierr = NF90_INQ_VARID (id_ncu, 'lev', id_lev)
+      CALL err(ierr)
+      ierr = NF90_INQ_VARID (id_ncu, 'a_bnds', id_a)
+      CALL err(ierr)
+      ierr = NF90_INQ_VARID (id_ncu, 'b_bnds', id_b)
+      CALL err(ierr)
+      ierr = NF90_INQ_VARID (id_ncu, 'p0', id_p0)
+      CALL err(ierr)
+      
+      ierr = NF90_GET_VAR (id_ncu, id_lon, vlon, start=[1], count=[IMT])
+      CALL err(ierr)
+      ierr = NF90_GET_VAR (id_ncu, id_lat, vlat2(0:jmt), start=[1], count=[JMT+1])
+      CALL err(ierr)
+      ierr = NF90_GET_VAR (id_ncu, id_lev, vlev, start=[1], count=[KM])
+      CALL err(ierr)
+      
+      ierr = NF90_GET_VAR (id_ncu, id_a, aa(1:KM), start=[2,1], count=[1,KM])
+      CALL err(ierr)
+      ierr = NF90_GET_VAR (id_ncu, id_a, aa(0:KM-1), start=[1,1], count=[1,KM])
+      CALL err(ierr)
+      ierr = NF90_GET_VAR (id_ncu, id_b, bb(1:KM), start=[2,1], count=[1,KM])
+      CALL err(ierr)
+      ierr = NF90_GET_VAR (id_ncu, id_b, bb(0:KM-1), start=[1,1], count=[1,KM])
+      CALL err(ierr)
+      ierr = NF90_GET_VAR (id_ncu, id_p0, p0)
+      CALL err(ierr)
+      
+      
+      !!
+      !! Define dy and calculate dx
+      !!
+      call calc_dxdy()
+      
+      
+      !!
+      !! Re-grid if necessary
+      !!
+      IF (tweak_zmean >= 1) THEN
+         zFile2 = trim(tmpDataDir)//trim(prefix)//'z0.nc'
+         !CALL cdo_interp(zFile,zFile2,topoFile,tmpFile,rstring,'orog',0,0,0)
+         zFile = zFile2
+      END IF
+      
+      !!
+      !! Read orography (Z file)
+      !!
+      ierr = NF90_OPEN( zFile, NF90_SHARE, id_ncz)
+      CALL err(ierr)
+      ierr = NF90_INQ_VARID (id_ncz, 'orog', id_z) 
+      CALL err(ierr)
+      ierr = NF90_GET_VAR (id_ncz, id_z, zxy(:,0:jmt),    start=[  1,     1], &
+      &                                                   count=[IMT, JMT+1])
+      CALL err(ierr)
+      ierr = NF90_CLOSE(id_ncz)
+      CALL err(ierr)
+      IF (tweak_tend >=1) THEN
+         !CALL SYSTEM('rm '//TRIM(zFile))
+      END IF
+      
+   END IF
+   
+   
+   ierr = NF90_GET_VAR (id_ncu, id_u, uxyz(:,0:JMT,:), &
+   &                                        start=[  1,   1,  1, istep],     &
+   &                                        count=[IMT, JMT+1, KM,     1])
+   CALL err(ierr)
+   ierr = NF90_GET_VAR (id_ncv, id_v, vxyz(:,0:JMT,:), &
+   &                                        start=[  1,   1,  1, istep], &
+   &                                        count=[IMT, JMT+1, KM,     1])
+   CALL err(ierr)
+   ierr = NF90_GET_VAR (id_nct, id_t, txyz(:,0:JMT,:), &
+   &                                        start=[  1,   1,  1, istep], &
+   &                                        count=[IMT, JMT+1, KM,     1])
+   CALL err(ierr)
+   ierr = NF90_GET_VAR (id_ncu, id_p, pxy(:,0:JMT),  &
+   &                                        start=[  1,   1, istep], &
+   &                                        count=[IMT, JMT+1,     1])
+   CALL err(ierr)
+   ierr = NF90_GET_VAR (id_ncq, id_q, qxyz(:,0:JMT,:), &
+   &                                        start=[  1,   1,  1, istep], &
+   &                                        count=[IMT, JMT+1, KM,     1])
+   CALL err(ierr)
+   
+         
+   IF ( (imon == 12 .AND. iday == 31 .AND. ihour == 18) .OR. llast) THEN
+      
+      ierr = NF90_CLOSE(id_ncu)
+      CALL err(ierr)
+      ierr = NF90_CLOSE(id_ncv)
+      CALL err(ierr)
+      ierr = NF90_CLOSE(id_nct)
+      CALL err(ierr)
+      ierr = NF90_CLOSE(id_ncq)
+      CALL err(ierr)
+      
+      IF (tweak_zmean >= 1) THEN
+         !CALL SYSTEM('rm '//TRIM(pFile))
+         !CALL SYSTEM('rm '//TRIM(uFile))
+         !CALL SYSTEM('rm '//TRIM(vFile))
+         !CALL SYSTEM('rm '//TRIM(qFile))
+         !CALL SYSTEM('rm '//TRIM(tFile))
+      END IF
+      
+   END IF
+   
+   
+   !!
+   !! A-grid -> C-grid
+   !!
+   call a2cgrid_u(pxy(:,:),pu(:,:))
+   call a2cgrid_v(pxy(:,:),pv(:,:))
+   call a2cgrid_t(pxy(:,:),pt(:,:))
+   call a2cgrid_t(zxy(:,:),geo_i(:,:,km))
+   
+   rho_i(:,:,0) = aa(km) * p0 + bb(km) * pt(:,:)
+   
+   DO jk=1,KM
+      
+      !! Flip vertical axis
+      il = km - jk + 1
+      kb = km - jk
+      ku = km - jk + 1
+      
+      da = aa(kb) - aa(ku)
+      db = bb(kb) - bb(ku)
+      rho_i(:,:,jk) = aa(kb) * p0 + bb(kb) * pt(:,:)
+      dzt(:,:,jk,2) = da * p0 + db * pt(:,:)
+      vol(:,:,jk)   = dzt(:,:,jk,2) * dxdy(:,:) / dg
+      
+      call a2cgrid_t(txyz(:,:,il),tem(:,:,jk))
+      call a2cgrid_t(qxyz(:,:,il),sal(:,:,jk))
+      
+      call a2cgrid_u(uxyz(:,:,il),uxyz(:,:,il))
+      uflux(:,:,jk) = uxyz(:,:,il) * dy(:,:) * ( da * p0 + db * pu(:,:)) / dg
+      call a2cgrid_v(vxyz(:,:,il),vxyz(:,:,il))
+      vflux(:,:,jk) = vxyz(:,:,il) * dx(:,:) * ( da * p0 + db * pv(:,:)) / dg
+      
+      
+   END DO
+   
+   deallocate ( txyz, qxyz, uxyz, vxyz, pxy, pu, pv, pt )
+   
+   geo_i(:,:,km) = geo_i(:,:,km) * dg
+   
+   call int_geo()
+   
+   geo(:,:,1:km) = 0.5 * (geo_i(:,:,0:km-1) + geo_i(:,:,1:km))
+   rho(:,:,1:km) = 0.5 * (rho_i(:,:,0:km-1) + rho_i(:,:,1:km))
+   
+   call calc_wflux()
+   
+   
+!$OMP END MASTER
+
 
    return
    
