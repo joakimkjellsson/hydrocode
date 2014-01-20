@@ -30,7 +30,7 @@ PROGRAM PSIXX_IFS
 !!                             
 !!  EDIT Sept. 2013:    v1.2 Added support for CCSM4, IPSL-CM5A-LR,
 !!                           CanESM2, NorESM1
-!!  EDIT Dec. 2013:     v1.2 Added support for CSIRO-Mk3-6-0, MIROC5
+!!  EDIT Dec. 2013:     v1.2 Added support for CSIRO-Mk3-6-0
 !!
 !!------------------------------------------------------------------------------
    
@@ -75,7 +75,7 @@ PROGRAM PSIXX_IFS
    &                                                 ints2, nsteps, i_lh,      &
    &                                                 nthreads, ithread,        &
    &                                                 nmean, nmean2,            &
-   &                                                 ical
+   &                                                 ical, nav
    
    INTEGER*8                                     ::  ntime
    INTEGER, ALLOCATABLE, DIMENSION(:)            ::  mm,mm2
@@ -103,7 +103,7 @@ PROGRAM PSIXX_IFS
    
    REAL*4                                        ::  dr, dt, ds, dd, dm,   &
    &                                                 dr2, dt2, ds2, dd2, dm2,  &
-   &                                                 lh, da, da2, tmp1, tmp2
+   &                                                 lh, da, da2
 
    
    REAL*4, ALLOCATABLE, DIMENSION(:,:,:)         ::  psiz, psiz_av,            &
@@ -152,28 +152,15 @@ PROGRAM PSIXX_IFS
    &                                                 ntimestring*10,           &
    &                                                 yearstring*4
 
-   LOGICAL                                       ::  logp
+   LOGICAL                                       ::  logp, lfirst
    
 !!------------------------------------------------------------------------------
 
-   
-   !!
-   !! Initialise
-   !!
+
    DATA mois/31,28,31,30,31,30,31,31,30,31,30,31/
    
-   lverbose = .false.
-   logp = .false.
-   tweak_tmean = 0
-   tweak_zmean = 0
-   tweak_tend = 0 
-   tweak_freq = 0
-   tweak_entropy = 0
+   lfirst = .true.
    
-   
-   !!
-   !! Read namelist
-   !! 
    NAMELIST /TIME/    yearstart,monstart,daystart,hourstart,hourstep,intsend
    NAMELIST /DIR/     inDataDir,outDataDir,tmpDataDir,topoDir
    NAMELIST /FILE/    project,prefix   
@@ -441,31 +428,24 @@ PROGRAM PSIXX_IFS
    PRINT*,'                                                                    '
    SELECT CASE (TRIM(project))
       
-      case ('BCC-HISTR')
-         print*,' Analysing BCC-CSM1.1 historical simulation, T42L26 '
-         ical = 1  !noleap
-      case ('BCC-RCP85')
-         print*,' Analysing BCC-CSM1.1 RCP8.5 simulation, T42L26 ' 
-         ical = 1  !noleap
-         
-      case ('CanESM2-HISTR')
+      CASE ('CanESM2-HISTR')
          PRINT*,' Analysing CanESM historical simulation, T63L35 '
          ical = 1   !365-day year 
-      case ('CanESM2-RCP85')
+      CASE ('CanESM2-RCP85')
          PRINT*,' Analysing CanESM RCP 8.5 simulation, T63L35 '
          ical = 1   !365-day year
       
-      case ('CCSM-HISTR')
+      CASE ('CCSM-HISTR')
          PRINT*,' Analysing CCSM4 simulation, f9L26 '
          ical = 1   !365-day year 
-      case ('CCSM-RCP85')
+      CASE ('CCSM-RCP85')
          PRINT*,' Analysing CCSM4 RCP8.5 simulation, f9L26 '
          ical = 1
       
-      case ('CNRM-HISTR')
+      CASE ('CNRM-HISTR')
          PRINT*,' Analysing CNRM-CM5 historical simulation, T127,L31'
          ical = 0
-      case ('CNRM-RCP85')
+      CASE ('CNRM-RCP85')
          PRINT*,' Analysing CNRM-CM5 RCP8.5 simulation, T127L31 '
          ical = 0
       
@@ -476,77 +456,63 @@ PROGRAM PSIXX_IFS
          print*,' Analysing CSIRO-Mk3-6-0 RCP8.5 simulation, T63,L18 '
          ical = 1
       
-      case ('ERA')
+      CASE ('ERA')
          PRINT*,' Analysing ERA-Interim reanalysis data, T255L60 '
          ical = 0
       
-      case ('GFDL-AMIP')
+      CASE ('GFDL-AMIP')
          PRINT*,' Analysing GFDL AMIP control simulation '
          ical = 0
-      case ('GFDL-HISTR')
+      CASE ('GFDL-HISTR')
          PRINT*,' Analysing GFDL historical simulation, C48L48 '
          ical = 1   !365-day year
-      case ('GFDL-RCP85')
+      CASE ('GFDL-RCP85')
          PRINT*,' Analysing GFDL RCP 8.5 simulation, C48L48 '
          ical = 1   !365-day year
       
-      case ('GISS-HISTR')
+      CASE ('GISS-HISTR')
          PRINT*,' Analysing GISS-E2-R historical simulation '
          ical = 1   !365-day year
       
-      case ('HAD-HIST')
+      CASE ('HAD-HIST')
          PRINT*,' Analysing HadGEM historical simulation, N96L38 '
          ical = 2   !360-day year (all months 30 days)
       
-      case ('IFS-SHC')
+      CASE ('IFS-SHC')
          PRINT*,' Analysing EC-Earth historical simulation, T159L62 '
          ical = 0  !Leap year
-      case ('IFS-SS41')
+      CASE ('IFS-SS41')
          PRINT*,' Analysing EC-Earth RCP4.5 simulation, T159L62 '
          ical = 0
-      case ('IFS-SS81')
+      CASE ('IFS-SS81')
          PRINT*,' Analysing EC-Earth RCP8.5 simulation, T159L62 ' 
          ical = 0
       
-      case ('IPSL-HISTR')
+      CASE ('IPSL-HISTR')
          PRINT*,' Analysing IPSL-CM5A historical simulation, 144x143xL39 '
          ical = 1   !365-day year 
-      case ('IPSL-RCP85')
+      CASE ('IPSL-RCP85')
          PRINT*,' Analysing IPSL-CM5A RCP 8.5 simulation, 144x143xL39 '
          ical = 1   !365-day year
          
       
-      case ('MERRA')
+      CASE ('MERRA')
          PRINT*,' Analysing MERRA reanalysis data '
          ical = 0
       
-      case ('MIROC5-HISTR')
-         print*,' Analysing MIROC5 historical simulation, T85L40 '
-         ical = 1 !no leap
-      case ('MIROC5-RCP85')
-         print*,' Analysing MIROC5 RCP8.5 simulation, T85L40 '
-         ical = 1 !no leap
       
-      case ('MRI-CGCM3-HISTR')
-         print*,' Analysing MRI-CGCM3 historical simulation, TL159 L48 '
-         ical = 0 !gregorian
-      case ('MRI-CGCM3-RCP85')
-         print*,' Analysing MRI-CGCM3 RCP8.5 simulation, TL159 L48 '
-         ical = 0 !gregorian
-         
-      case ('NorESM1-HISTR')
+      CASE ('NorESM1-HISTR')
          PRINT*,' Analysing NorESM1-M historical simulation, f19L26 '
          ical = 1   !365-day year       
-      case ('NorESM1-RCP85')
+      CASE ('NorESM1-RCP85')
          PRINT*,' Analysing NorESM1-M RCP 8.5 simulation, f19L26 '
          ical = 1   !365-day year              
       
-      case default
+      CASE DEFAULT
          PRINT*,' Run: ',TRIM(project)
          PRINT*,' This project is not implemented yet. Stopping. '
          STOP
-   
-   end select
+   END SELECT
    
    SELECT CASE (ical)
       CASE(0)
@@ -689,28 +655,7 @@ PROGRAM PSIXX_IFS
    
    END SELECT
    
-   !!
-   !! Define regions
-   !!
-   !DO jj=1,JMT
-      
-      !IF(     (vlat(jj) >= -90. .AND. vlat(jj) < -60.) .OR. &   !Polar regions
-      !&       (vlat(jj) >  60.  .AND. vlat(jj) <= 90. ) ) THEN
-      !   izov(:,jj) = 3
-      !ELSEIF( (vlat(jj) >= -60. .AND. vlat(jj) < -30.) .OR. &   !Midlatitudes
-      !&       (vlat(jj) >  30.  .AND. vlat(jj) <= 60. ) ) THEN
-      !   izov(:,jj) = 2
-      !ELSEIF( (vlat(jj) >= -30. .AND. vlat(jj) <= 30. ) ) THEN   !Tropics
-      !   izov(:,jj) = 1
-   !   IF ( vlat(jj) >= 0. ) THEN
-   !      izov(:,jj) = 1
-   !   ELSE
-   !      izov(:,jj) = 2
-   !   END IF
-   ! 
-   !END DO
-   
-   
+     
    
 
    !!
@@ -723,7 +668,7 @@ PROGRAM PSIXX_IFS
 !$OMP & PRIVATE(jl, jk, jj, ji, im, ip, jm, jp, kb, ku, il,&
 !$OMP & mm, mm2, ints, nsteps, id_nc2, &
 !$OMP & ierr, id_nc, id_psiyzv, id_psiyzw, ir, ir2, jzr, jzr2, jn, m1,&
-!$OMP & jr, vars, ithread, nmean2, mk)
+!$OMP & jr, vars, ithread, nmean2, mk, nav)
     
 !$OMP MASTER  
    nthreads = OMP_GET_NUM_THREADS() 
@@ -737,7 +682,9 @@ PROGRAM PSIXX_IFS
    !!  START OF MAIN TIME LOOP
    !!
    !!------------------------------
-
+   
+   nav = 0
+   
    DO ints=1,intsend
 
 !$OMP BARRIER            
@@ -1125,13 +1072,13 @@ PROGRAM PSIXX_IFS
    !!
    !! Store previous time step
    !!
-   IF ( tweak_tend /= 0 ) THEN
+   IF ( tweak_tend /= 0 .and. ints /= 1) THEN
       IF (  tweak_tmean == 0 .OR. &
          & (tweak_tmean == -1 .AND. ihour == 0 )                            .OR.&
          & (tweak_tmean == -2 .AND. ihour == 0 .AND. iday == 1 )            .OR.&
          & (tweak_tmean == -3 .AND. ihour == 0 .AND. iday == 1 .AND. imon == 1 ).OR.&
-         &  nmean == 0 )  THEN
-         PRINT*,' Storing variables from previous step '
+         &  nmean == 0 .and. lfirst /= .true. )  THEN
+         PRINT*,' Storing variables from last stored step '
          tem2 = tem
          sal2 = sal
          rho2 = rho
@@ -1151,11 +1098,6 @@ PROGRAM PSIXX_IFS
    end if
    
    SELECT CASE (TRIM(project))
-      
-      case ('BCC-HISTR')
-         call get_data_bcc('HISTR')
-      case ('BCC-RCP85')
-         call get_data_bcc('RCP85')
       
       CASE ('CanESM2-HISTR')
          CALL get_data_canesm('ESM2-HISTR')
@@ -1208,16 +1150,6 @@ PROGRAM PSIXX_IFS
       CASE ('MERRA')
          CALL get_data_merra()
       
-      case ('MIROC5-HISTR')
-         call get_data_miroc('HISTR')
-      case ('MIROC5-RCP85')
-         call get_data_miroc('RCP85')
-      
-      case ('MRI-CGCM3-HISTR')
-         call get_data_mri('HISTR')
-      case ('MRI-CGCM3-RCP85')
-         call get_data_mri('RCP85')
-      
       CASE ('NorESM1-HISTR')
          CALL get_data_noresm('ESM1-HISTR')
       CASE ('NorESM1-RCP85')
@@ -1240,7 +1172,24 @@ END IF
 
    IF ( ints == 1 ) THEN
 
-!$OMP MASTER      
+!$OMP MASTER 
+      !!
+      !! Define regions
+      !!
+      DO jj=1,JMT
+      
+         IF(     (vlat(jj) >= -90. .AND. vlat(jj) < -60.) .OR. &   !Polar regions
+            &       (vlat(jj) >  60.  .AND. vlat(jj) <= 90. ) ) THEN
+            izov(:,jj) = 3
+         ELSEIF( (vlat(jj) >= -60. .AND. vlat(jj) < -30.) .OR. &   !Midlatitudes
+            &       (vlat(jj) >  30.  .AND. vlat(jj) <= 60. ) ) THEN
+            izov(:,jj) = 2
+         ELSEIF( (vlat(jj) >= -30. .AND. vlat(jj) <= 30. ) ) THEN   !Tropics
+            izov(:,jj) = 1
+         END IF
+    
+      END DO
+           
       !!
       !! Fill coordinate variables
       !!
@@ -1354,7 +1303,10 @@ END IF
          &  ints == intsend                                 .OR.               &
          &  nmean == tweak_tmean )  THEN
          
-         PRINT*,' Time to average fields. nmean, thread = ',nmean,OMP_GET_THREAD_NUM()
+         nav = nav + 1
+         
+         PRINT*,' Time to average fields. nmean, nav thread = ',& 
+         &      nmean,nav,OMP_GET_THREAD_NUM()
 !$OMP SECTIONS         
 !$OMP SECTION
          umean = umean / FLOAT(nmean)
@@ -1543,30 +1495,11 @@ END IF
          DO ji=1,IMT
             
             IF (tem(ji,jj,jk) /= undef) THEN
-               
-               if (tweak_entropy == 1) then
-                  
-                  ! Saturation vapour pressure from C-C
-                  tmp1 = 611. * exp( Lv/(Rv*273.) - Lv/(Rv*tem(ji,jj,jk)) ) ![Pa]
-                  ! Saturation specific humidity
-                  tmp2 = 0.622 * tmp1 / (rho(ji,jj,jk)-tmp1) ![kg/kg]
-                  
-                  ! Potential temperature
-                  dse(ji,jj,jk) = tem(ji,jj,jk) * (100000./rho(ji,jj,jk))**(cp/Rd) ![K]
-                  
-                  ! Equivalent potential temperature
-                  mse(ji,jj,jk) = dse(ji,jj,jk) * & 
-                  &               exp(Lv * sal(ji,jj,jk) / (cp * tem(ji,jj,jk)) ) * & 
-                  &               (tmp2/sal(ji,jj,jk)) ** (sal(ji,jj,jk)*Rv/cp)    ![K]
-                  
-               else
-                  
-                  ! Dry static energy at layer mid-points
-                  dse(ji,jj,jk) = cp * tem(ji,jj,jk) + geo(ji,jj,jk) ![J/kg]
-                  ! Moist static energy
-                  mse(ji,jj,jk) = dse(ji,jj,jk) + Lv * sal(ji,jj,jk) ![J/kg]
-                  
-               end if
+            
+               ! Dry static energy at layer mid-points
+               dse(ji,jj,jk) = cp * tem(ji,jj,jk) + geo(ji,jj,jk) ![J/kg]
+               ! Moist static energy
+               mse(ji,jj,jk) = dse(ji,jj,jk) + Lv * sal(ji,jj,jk) ![J/kg]
                ! Specific volume
                alpha(ji,jj,jk) = Rd * tem(ji,jj,jk) / rho(ji,jj,jk) ![m3/kg]
       
@@ -1597,13 +1530,12 @@ END IF
    END DO
 !$OMP END DO
    
-   IF (ints == 1) THEN
+   IF (ints == 1 .or. (tweak_tend /= 0 .and. nav <= 1)) then
       IF (lverbose) THEN
          PRINT*,' Cycling',OMP_GET_THREAD_NUM()
       END IF
       CYCLE
    END IF
-   
    
    ALLOCATE (vars(NRST), mm(0:imm), mm2(0:imm))
    vars(:) = 0.
@@ -1958,6 +1890,7 @@ END IF
                               ir = INT( (DBLE(m1)-DBLE(mm2(7)))/mk + DBLE(mm(7)) )
                               ir = max(ir,1)
                               ir = min(ir,mr)
+                              !print*,'incr',ir,m1
                               psrr2(ir,m1,il,jzr,jzr2) = &
                            &  psrr2(ir,m1,il,jzr,jzr2) + &
                            &  vol(ji,jj,jk) / (FLOAT(hourstep) * 3600.)
@@ -1968,6 +1901,7 @@ END IF
                               ir = INT( (DBLE(m1)-DBLE(mm2(7)))/mk + DBLE(mm(7)) )
                               ir = max(ir,1)
                               ir = min(ir,mr)
+                              !print*,'decr',ir,m1
                               psrr2(ir,m1,il,jzr,jzr2) = &
                            &  psrr2(ir,m1,il,jzr,jzr2) - &
                            &  vol(ji,jj,jk) / (FLOAT(hourstep) * 3600.)
@@ -2499,8 +2433,7 @@ END IF
       CALL err(ierr)
    END IF
 !$OMP END MASTER
-!$OMP BARRIER
-
+!$OMP BARRIER   
    
    END DO !end time loop
    
