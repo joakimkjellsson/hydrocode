@@ -2328,18 +2328,18 @@ CONTAINS
       SELECT CASE (TRIM(run))
          
          CASE ('IPSL-HISTR')
-            string='000001010300-000012312100.nc'
+            string='0000010103-0000123121.nc'
             WRITE (string(1:4),   '(i4)') iyear - MOD(iyear,10)
-            WRITE (string(14:17), '(i4)') iyear - MOD(iyear,10) + 9
-            dataprefix='6hrLev_IPSL-CM5A-LR_historical_r1i1p1_'//TRIM(string)
+            WRITE (string(12:15), '(i4)') iyear - MOD(iyear,10) + 9
+            dataprefix='6hrLev_IPSL-CM5B-LR_historical_r1i1p1_'//TRIM(string)
             string = '/0000/'
             WRITE (string(2:5),   '(i4)') iyear - MOD(iyear,10)
             uFile=TRIM(inDataDir)//TRIM(string)//'/ua_'//TRIM(dataprefix)
             vFile=TRIM(inDataDir)//TRIM(string)//'/va_'//TRIM(dataprefix)
             tFile=TRIM(inDataDir)//TRIM(string)//'/ta_'//TRIM(dataprefix)
             qFile=TRIM(inDataDir)//TRIM(string)//'/hus_'//TRIM(dataprefix)
-            zFile=TRIM(topoDir)//'orog_fx_IPSL-CM5A-LR_historical_r0i0p0.nc'
-            topoFile=TRIM(topoDir)//'areacella_fx_IPSL-CM5A-LR_historical_r0i0p0.nc'
+            zFile=TRIM(topoDir)//'orog_fx_IPSL-CM5B-LR_historical_r0i0p0.nc'
+            topoFile=TRIM(topoDir)//'areacella_fx_IPSL-CM5B-LR_historical_r0i0p0.nc'
             
          CASE ('IPSL-RCP85')
             string='0000010103-0000123121.nc'
@@ -2350,7 +2350,7 @@ CONTAINS
                WRITE (string(1:4),   '(i4)') iyear - MOD(iyear,10) + 6
                WRITE (string(12:15), '(i4)') iyear - MOD(iyear,10) + 15
             END IF
-            dataprefix='6hrLev_IPSL-CM5A-LR_rcp85_r1i1p1_'//TRIM(string)
+            dataprefix='6hrLev_IPSL-CM5B-LR_rcp85_r1i1p1_'//TRIM(string)
             string = '/0000/'
             IF (MOD(iyear,10) <= 5) THEN
                WRITE (string(2:5),       '(i4)') iyear - MOD(iyear,10) - 4
@@ -2361,8 +2361,8 @@ CONTAINS
             vFile=TRIM(inDataDir)//TRIM(string)//'va_'//TRIM(dataprefix)
             tFile=TRIM(inDataDir)//TRIM(string)//'ta_'//TRIM(dataprefix)
             qFile=TRIM(inDataDir)//TRIM(string)//'hus_'//TRIM(dataprefix)
-            zFile=TRIM(topoDir)//'orog_fx_IPSL-CM5A-LR_historical_r0i0p0.nc'
-            topoFile=TRIM(topoDir)//'areacella_fx_IPSL-CM5A-LR_historical_r0i0p0.nc'
+            zFile=TRIM(topoDir)//'orog_fx_IPSL-CM5B-LR_historical_r0i0p0.nc'
+            topoFile=TRIM(topoDir)//'areacella_fx_IPSL-CM5B-LR_historical_r0i0p0.nc'
       
       END SELECT
             
