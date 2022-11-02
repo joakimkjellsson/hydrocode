@@ -1,0 +1,95 @@
+&TIME
+    yearstart=1979,
+    monstart=1,
+    daystart=7,
+    hourstart=0,
+    hourstep=6,
+    intsend=144,
+/
+
+&DIR
+    inDataDir='/work/bk1099/data/',
+    outDataDir='/work/bb0519/from_Mistral/bb0519/b350090/hydrothermal/outdata/',
+    tmpDataDir='/work/bb0519/from_Mistral/bb0519/b350090/hydrothermal/tmp/',
+    topoDir='/work/bb0519/from_Mistral/bb0519/b350090/hydrothermal/era5_topo/',
+/
+
+&FILE
+    project='ERA5',
+    prefix='ERA5',
+/
+
+&GRID
+    ! number of zonal points
+    imt=360,
+    ! number of meridional points
+    jmt=180,
+    ! number of vertical points
+    km=137,
+    ! number of bins in tracer coord (for stream functions)
+    mr=251,
+    ! number of bins in tracer coord (for storing tracers)
+    mr2=40,
+    ! number of tracers to use
+    ! 1 = Specific humidity
+    ! 2 = DSE
+    ! 3 = MSE
+    ! 4 = Specific volume
+    ! 5 = Pressure
+    ! 6 = Temperature
+    nrst=2,
+    ! Number of subregions to split data into
+    ! lbas = 1 computes stream functions for global data
+    ! lbas = 3 computes stream functions separately for tropics, midlat and polar
+    lbas=1,
+/
+
+&COORD
+    ! Min/max for pressure (hPa/mb)
+    rmin=0,
+    rmax=1100,
+    ! Min/max for temperature (K)
+    tmin=173,
+    tmax=323,
+    ! Min/max for spec. hum. (g/kg)
+    smin=0,
+    smax=25,
+    ! Min/max for DSE (kJ/kg)
+    dmin=150,
+    dmax=1350,
+    ! Min/max for MSE (kJ/kg)
+    mmin=150,
+    mmax=1400,
+    ! Min/max for spec. vol (m3/kg)
+    amin=0.6,
+    amax=1.6,
+/
+
+&MISC
+    ! Print extra log info (True) or not (False)
+    lverbose=.TRUE.,
+    ! Is pressure in hPa or ln(hPa)
+    ! Useful if you wish to look at upper atmosphere
+    logp=.FALSE., 
+    ! Use time mean
+    ! 0 = use full temporal resolution
+    ! N = average every N time steps
+    ! -1 = use day means
+    ! -2 = use monthly means 
+    ! -3 = use annual means
+    tweak_tmean=0,
+    ! Use zonal means
+    ! 0 = use full resolution
+    ! N = regrid data to NxN grid using CDO
+    ! -1 = use zonal mean (e.g. Hadley Cell)
+    ! -2 = use deviations from zonal mean (e.g. Walker Cell)
+    tweak_zmean=0,
+    ! Use time tendencies, e.g. local d/dt in grid cells
+    ! 0 = use only advective part (as Doos et al. 2013)
+    ! anything else = use advective and time tendencies (as Kjellsson et al. 2014)
+    tweak_tend=1,
+    ! Output frequency
+    ! 0 = store every month
+    ! N = store every Nth time step
+    tweak_freq=1,
+/
